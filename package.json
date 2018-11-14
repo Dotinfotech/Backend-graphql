@@ -1,0 +1,17 @@
+{
+  "name": "loginregistergraphql",
+  "version": "1.0.0",
+  "description": "GraphCool + Typescript signup loggedInUser and authentication ",
+  "main": "index.js",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "graphcool-lib": "^0.1.4",
+    "validator": "^9.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "graphcool console"
+  },
+  "author": "Anuj",
+  "license": "ISC"
+}
