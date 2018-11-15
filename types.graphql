@@ -4,14 +4,4 @@ type User @model {
   updatedAt: DateTime!
   email: String! @isUnique
   password: String!
-  firstName: String
-  lastName: String
-  username: String
-  postData: [Post!]! @relation(name: "UserData")
-}
-
-type Post @model{
-  id: ID! @isUnique
-  userName: String!
-  userModel: [User!]! @relation(name: "UserData")
-}
+}                                                                           

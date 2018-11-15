@@ -32,11 +32,8 @@ permissions:
   - operation: User.delete
     authenticated: true
 
-  #Post
-  - operation: Post.read
-
-
-
-rootTokens:
-  - mytoken
+rootTokens: 
+  - signup
+  - authenticate
+  - loggedInUser
 

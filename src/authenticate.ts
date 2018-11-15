@@ -9,7 +9,7 @@ query UserQuery($email: String!) {
   }
 }`
 
-const getGraphcoolUser = (api, email) => {
+const getGraphcoolUser = (api:any, email:any) => {
   return api.request(userQuery, { email })
     .then(userQueryResult => {
       if (userQueryResult.error) {

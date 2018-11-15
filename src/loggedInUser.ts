@@ -1,4 +1,4 @@
-import {fromEvent} from 'graphcool-lib'
+import { fromEvent } from 'graphcool-lib'
 
 const userQuery = `
 query UserQuery($userId: ID!) {
@@ -8,7 +8,7 @@ query UserQuery($userId: ID!) {
   }
 }`
 
-const getUser = (api, userId) => {
+const getUser = (api: any, userId: any) => {
   return api.request(userQuery, { userId })
     .then(userQueryResult => {
       return userQueryResult.User
@@ -23,7 +23,7 @@ export = event => {
 
   if (!event.context.auth || !event.context.auth.nodeId) {
     console.log(`No auth context`)
-    return {data: {id: null}}
+    return { data: { id: null } }
   }
 
   const userId = event.context.auth.nodeId

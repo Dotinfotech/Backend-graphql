@@ -20,7 +20,7 @@ mutation CreateUserMutation($email: String!, $passwordHash: String!) {
   }
 }`
 
-const getGraphcoolUser = (api, email) => {
+const getGraphcoolUser = (api: any, email: any) => {
   return api.request(userQuery, { email })
     .then(userQueryResult => {
       if (userQueryResult.error) {
@@ -31,14 +31,14 @@ const getGraphcoolUser = (api, email) => {
     })
 }
 
-const createGraphcoolUser = (api, email, passwordHash) => {
+const createGraphcoolUser = (api: any, email: any, passwordHash:any) => {
   return api.request(createUserMutation, { email, passwordHash })
     .then(userMutationResult => {
       return userMutationResult.createUser.id
     })
 }
 
-export = function(event) {
+export = function(event:any) {
   if (!event.context.graphcool.pat) {
     console.log('Please provide a valid root token!')
     return { error: 'Email Signup not configured correctly.'}
