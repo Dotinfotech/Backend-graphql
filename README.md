@@ -32,6 +32,21 @@ Authorization: Bearer <Token> and it will return loggedIn User ID
   }
 }`
 
+Update Email
+`mutation {
+  updateEmail(email: "newUser@gmail.com", password: "123", newEmail: "newuser@gmail.com") {
+    email
+    id
+  }
+}`
+
+Update Password 
+`mutation{
+  updatePassword(email:"newUser@gmail.com",password:"123",newPassword:"test123"){
+    id
+  }
+}`
+
 References :
 
 [GraphCool Website](https://www.graph.cool/)
