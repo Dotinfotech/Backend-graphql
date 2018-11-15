@@ -22,6 +22,28 @@ functions:
       code: 
         src: src/loggedInUser.ts
 
+  passwordReset:
+    type: resolver
+    schema: ./src/passwordReset.graphql
+    handler:
+      code:
+        src: ./src/passwordReset.ts
+  
+  
+  updatePassword:
+    type: resolver
+    schema: src/updatePassword.graphql
+    handler:
+      code: 
+        src: src/updatePassword.ts
+   
+  updateEmail:
+    type: resolver
+    schema: src/updateEmail.graphql
+    handler:
+      code: 
+        src: src/updateEmail.ts
+             
 permissions:
   #User
   - operation: User.read
@@ -36,4 +58,6 @@ rootTokens:
   - signup
   - authenticate
   - loggedInUser
+  - updatePassword
+  - updateEmail
 

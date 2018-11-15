@@ -8,6 +8,7 @@
     "@types/node": "^10.12.8",
     "@types/validator": "^9.4.3",
     "bcryptjs": "^2.4.3",
+    "dotenv": "^6.1.0",
     "graphcool-lib": "^0.1.4",
     "validator": "^9.0.0"
   },

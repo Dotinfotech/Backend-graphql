@@ -1,4 +1,4 @@
-import {fromEvent}  from 'graphcool-lib'
+import { fromEvent } from 'graphcool-lib'
 import * as bcryptjs from 'bcryptjs'
 import * as validator from 'validator'
 
@@ -31,17 +31,17 @@ const getGraphcoolUser = (api: any, email: any) => {
     })
 }
 
-const createGraphcoolUser = (api: any, email: any, passwordHash:any) => {
+const createGraphcoolUser = (api: any, email: any, passwordHash: any) => {
   return api.request(createUserMutation, { email, passwordHash })
     .then(userMutationResult => {
       return userMutationResult.createUser.id
     })
 }
 
-export = function(event:any) {
+export = function (event: any) {
   if (!event.context.graphcool.pat) {
     console.log('Please provide a valid root token!')
-    return { error: 'Email Signup not configured correctly.'}
+    return { error: 'Email Signup not configured correctly.' }
   }
 
   // Retrieve payload from event
@@ -67,8 +67,8 @@ export = function(event:any) {
       .then(graphcoolUserId => {
         return graphcool.generateAuthToken(graphcoolUserId, 'User')
           .then(token => {
-            return { data: {id: graphcoolUserId, token}}
-        })
+            return { data: { id: graphcoolUserId, token } }
+          })
       })
       .catch(error => {
         console.log(`Error: ${JSON.stringify(error)}`)

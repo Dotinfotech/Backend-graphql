@@ -1,4 +1,4 @@
-import {fromEvent} from 'graphcool-lib'
+import { fromEvent } from 'graphcool-lib'
 import * as bcryptjs from 'bcryptjs'
 
 const userQuery = `
@@ -9,7 +9,7 @@ query UserQuery($email: String!) {
   }
 }`
 
-const getGraphcoolUser = (api:any, email:any) => {
+const getGraphcoolUser = (api: any, email: any) => {
   return api.request(userQuery, { email })
     .then(userQueryResult => {
       if (userQueryResult.error) {
@@ -23,7 +23,7 @@ const getGraphcoolUser = (api:any, email:any) => {
 export = event => {
   if (!event.context.graphcool.pat) {
     console.log('Please provide a valid root token!')
-    return { error: 'Email Authentication not configured correctly.'}
+    return { error: 'Email Authentication not configured correctly.' }
   }
 
   // Retrieve payload from event
