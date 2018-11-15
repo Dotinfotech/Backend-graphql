@@ -33,6 +33,7 @@ Authorization: Bearer <Token> and it will return loggedIn User ID
 }`
 
 Update Email
+
 `mutation {
   updateEmail(email: "newUser@gmail.com", password: "123", newEmail: "newuser@gmail.com") {
     email
@@ -41,6 +42,7 @@ Update Email
 }`
 
 Update Password 
+
 `mutation{
   updatePassword(email:"newUser@gmail.com",password:"123",newPassword:"test123"){
     id
