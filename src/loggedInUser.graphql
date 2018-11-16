@@ -1,5 +1,5 @@
 type LoggedInUserPayload {
-  id: ID
+  id: ID!
 }
 
 extend type Query {

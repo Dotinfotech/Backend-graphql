@@ -26,7 +26,7 @@ export = function (event:any) {
       })
   }
 
-  function updateGraphcoolUser(id, newEmail) {
+  function updateGraphcoolUser(id:any, newEmail:any) {
     return api.request(`
       mutation {
         updateUser(

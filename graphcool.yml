@@ -43,7 +43,21 @@ functions:
     handler:
       code: 
         src: src/updateEmail.ts
-             
+  
+  triggerPasswordReset:
+    type: resolver
+    schema: src/triggerPasswordReset.graphql
+    handler:
+      code: 
+        src: src/triggerPasswordReset.ts
+
+  sendPasswordResetEmail: 
+    type: resolver
+    schema: src/sendPasswordResetEmail.graphql
+    handler:
+      code: 
+        src: src/sendPasswordResetEmail.ts   
+
 permissions:
   #User
   - operation: User.read
@@ -60,4 +74,7 @@ rootTokens:
   - loggedInUser
   - updatePassword
   - updateEmail
+  - passwordReset
+  - triggerPasswordReset
+  - sendPasswordResetEmail
 

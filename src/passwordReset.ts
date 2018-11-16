@@ -58,6 +58,7 @@ export = function (event) {
     })
     .catch((error) => {
       console.log(error)
+
       return { error: 'An unexpected error occured.' }
     })
 }

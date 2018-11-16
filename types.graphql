@@ -4,4 +4,4 @@ type User @model {
   updatedAt: DateTime!
   email: String! @isUnique
   password: String!
-}                                                                           
+}
