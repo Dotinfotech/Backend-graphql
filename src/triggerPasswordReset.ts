@@ -1,20 +1,20 @@
 import { fromEvent } from 'graphcool-lib';
-// import * as _ from 'loadsh'
+import * as randomString from 'randomstring';
 
-export = function (event: any) {
+export = function (event) {
   const email = event.data.email
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
 
-  function randomString(length) {
-    let chars: any = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    var result: any = '';
-    for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
-    return result;
-  }
+  // function randomString(length) {
+  //   let chars: any = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  //   var result: any = '';
+  //   for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+  //   return result;
+  // }
 
   function generateResetToken() {
-    return randomString(20).toString('hex');
+    return randomString.generate(20).toString('hex');
   }
 
   function generateExpiryDate() {
@@ -22,11 +22,13 @@ export = function (event: any) {
     return new Date(now.getTime() + 3600000).toISOString()
   }
 
-  function getGraphcoolUser(email: any) {
+  function getGraphcoolUser(email) {
     return api.request(`
     query {
       User(email: "${email}"){
         id
+        email
+        resetToken
       }
     }`)
       .then((userQueryResult: any) => {
@@ -38,7 +40,7 @@ export = function (event: any) {
       })
   }
 
-  function toggleReset(graphcoolUserId: any) {
+  function toggleReset(graphcoolUserId) {
     return api.request(`
       mutation {
         updateUser(
@@ -55,7 +57,7 @@ export = function (event: any) {
   return getGraphcoolUser(email)
     .then((graphcoolUser) => {
       if (graphcoolUser === null) {
-        return Promise.reject('Invalid Credentials') // returning same generic error so user can't find out what emails are registered.
+        return Promise.reject('Invalid Credentials') 
       } else {
         return toggleReset(graphcoolUser.id)
       }
@@ -64,10 +66,9 @@ export = function (event: any) {
       const id = response.updateUser.id
       return { data: { id } }
     })
-    .catch((error: any) => {
+    .catch((error) => {
       console.log(error)
 
-      // don't expose error message to client!
       return { error: 'An unexpected error occured.' }
     })
 }

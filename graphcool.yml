@@ -50,10 +50,10 @@ functions:
       code:
         src: ./src/triggerPasswordReset.ts
   
-             
 permissions:
   #User
   - operation: User.read
+    fields: [email, id, createdAt, updatedAt]
   - operation: User.create
     authenticated: true
   - operation: User.update

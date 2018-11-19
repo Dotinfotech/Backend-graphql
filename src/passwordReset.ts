@@ -1,14 +1,20 @@
 import { fromEvent } from 'graphcool-lib'
 import * as bcrypt from 'bcryptjs'
+import * as dotenv from "dotenv";
+import * as sgMail from "@sendgrid/mail";
 
-export = function (event) {
+dotenv.config();
+let sendgridKey: any = process.env.SENDGRID_API_KEY
+
+sgMail.setApiKey(sendgridKey);
+export = function (event:any) {
   const resetToken = event.data.resetToken
   const newPassword = event.data.password
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
   const saltRounds = 10
 
-  function getUserWithToken (resetToken:any) {
+  function getUserWithToken(resetToken: any) {
     return api.request(`
       query {
         User(resetToken: "${resetToken}") {
@@ -16,7 +22,7 @@ export = function (event) {
           resetExpires
         }
       }`)
-      .then((userQueryResult:any) => {
+      .then((userQueryResult: any) => {
         if (userQueryResult.error) {
           return Promise.reject(userQueryResult.error)
         } else if (!userQueryResult.User || !userQueryResult.User.id || !userQueryResult.User.resetExpires) {
@@ -27,24 +33,23 @@ export = function (event) {
       })
   }
 
-  function updatePassword (id:any, newPasswordHash:any) {
+  function updatePassword(id: any, newPasswordHash: any) {
     return api.request(`
       mutation {
         updateUser(
           id: "${id}",
-          password: "${newPasswordHash}",
+          newPassword: "${newPasswordHash}",
           resetToken: null,
           resetExpires: null
         ) {
           id
         }
       }`)
-      .then((userMutationResult:any) => (userMutationResult.updateUser.id))
+      .then((userMutationResult: any) => (userMutationResult.updateUser.id))
   }
 
   return getUserWithToken(resetToken)
     .then(graphcoolUser => {
-      console.log(graphcoolUser)
       const userId = graphcoolUser.id
       const resetExpires = graphcoolUser.resetExpires
       if (new Date() > new Date(resetExpires)) {
@@ -62,3 +67,5 @@ export = function (event) {
       return { error: 'An unexpected error occured.' }
     })
 }
+
+

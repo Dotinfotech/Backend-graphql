@@ -1,0 +1,17 @@
+`query{
+# Add authorizationToken in HTTP Header as - Authorization: Bearer <Token>
+  loggedInUser{
+    id
+  }
+}`
+
+
+`query{
+# This will return allUsers data
+  allUsers {
+    createdAt
+    email
+    id
+    updatedAt
+  }
+}`

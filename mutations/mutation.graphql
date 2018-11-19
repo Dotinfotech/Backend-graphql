@@ -1,0 +1,55 @@
+`mutation{
+# Replace __EMAIL__ & __PASSWORD__
+  signupUser(email:"__EMAIL__",password:"__PASSWORD__"){
+    id
+    token
+  }
+}`
+
+`mutation {
+# Replace __EMAIL__ & __PASSWORD__
+  authenticateUser(email:"__EMAIL__",password:"__PASSWORD__") {
+    token
+  }
+}`
+
+`mutation{
+    # Replace __EMAIL__ & __PASSWORD__ & __NEWPASSWORD__
+  updateEmail(email: "__EMAIL__", password: "__PASSWORD__",newEmail:"__NEWEMAIL__"){
+    id
+    email
+  }
+}`
+
+`mutation {
+# Replace __EMAIL__ & __PASSWORD__ & __NEWPASSWORD__
+  updatePassword(email: "__EMAIL__", password: "__PASSWORD__", newPassword: "__NEWPASSWORD__") {
+    id
+  }
+}`
+
+
+`mutation{
+# This will trigger for resetting password 
+# Replace __EMAIL__
+  triggerPasswordReset(email:"__EMAIL__"){
+    id
+  }
+}`
+
+`mutation{
+# Replace __RESET_TOKEN__ & put __NEWPASSWORD__
+ resetPassword(resetToken:"__RESET_TOKEN__",password:"__NEWPASSWORD__") {
+     id
+    }
+}`
+
+`mutation{
+# Replace __ID__
+  deleteUser(id:"__ID__"){
+    createdAt
+    email
+    id
+    updatedAt
+  }
+}`

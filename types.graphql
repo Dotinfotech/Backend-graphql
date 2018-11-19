@@ -4,4 +4,6 @@ type User @model {
   updatedAt: DateTime!
   email: String! @isUnique
   password: String!
+  resetExpires: DateTime @isUnique
+  resetToken: String @isUnique
 }
