@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-import { fromEvent } from 'graphcool-lib'
-declare var crypto: any;
-=======
 import { fromEvent } from 'graphcool-lib';
 
 // declare var crypto: any;
@@ -9,7 +5,6 @@ import { fromEvent } from 'graphcool-lib';
 declare var __addVariable__: any; //commentThis
 
 // import * as __addVariable__ from "crypto"; 
->>>>>>> 1012ba4a199388a743ba291c94328910694c2311
 
 export = function (event: any) {
   const email = event.data.email
@@ -17,12 +12,9 @@ export = function (event: any) {
   const api = graphcool.api('simple/v1')
 
   function generateResetToken() {
-<<<<<<< HEAD
     //console.log('type: '+typeof(crypto.randombytes(20));
     return crypto.randomBytes(20).toString('hex')
-=======
     return __addVariable__.randomBytes(20).toString('hex');
->>>>>>> 1012ba4a199388a743ba291c94328910694c2311
   }
 
   function generateExpiryDate() {
