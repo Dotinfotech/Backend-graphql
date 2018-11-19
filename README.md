@@ -1,5 +1,5 @@
 # dotbackend-graphql
-Admin Panel - UserAuthentication Signup, LoggedInUser, Forgot Password
+Admin Panel - UserAuthentication Signup, LoggedInUser, Reset Password
 
 # Run
 1. Install Dependencies - npm install 
@@ -7,47 +7,9 @@ Admin Panel - UserAuthentication Signup, LoggedInUser, Forgot Password
 3. graphcool console 
 4. graphcool playground
 
-Make Mutation in Graphcool Console
+[Try out Mutations](https://github.com/DOTDemo/Backend-graphql/blob/feature/resetPassword/mutations/mutation.graphql)
 
-`mutation{
-  signupUser(email:"newUser@gmail.com",password:"123Test"){
-    id
-    token
-  }
-}`
-
-`mutation{
-  authenticateUser(email:"newUser@gmail.com",password:"123Test"){
-    token
-  }
-}`
-
-To check for loggedInUser - Copy the GeneratedToken in HTTP Header option as 
-
-Authorization: Bearer <Token> and it will return loggedIn User ID
-
-`query{
-  loggedInUser{
-    id
-  }
-}`
-
-Update Email
-
-`mutation {
-  updateEmail(email: "newUser@gmail.com", password: "123", newEmail: "newuser@gmail.com") {
-    email
-    id
-  }
-}`
-
-Update Password 
-
-`mutation{
-  updatePassword(email:"newUser@gmail.com",password:"123",newPassword:"test123"){
-    id
-  }
-}`
+[Try out Queries](https://github.com/DOTDemo/Backend-graphql/blob/feature/resetPassword/queries/queries.graphql)
 
 References :
 
