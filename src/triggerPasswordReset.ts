@@ -1,20 +1,20 @@
 import { fromEvent } from 'graphcool-lib';
-
-// declare var crypto: any;
-
-declare var __addVariable__: any; //commentThis
-
-// import * as __addVariable__ from "crypto"; 
+// import * as _ from 'loadsh'
 
 export = function (event: any) {
   const email = event.data.email
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
 
+  function randomString(length) {
+    let chars: any = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    var result: any = '';
+    for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+    return result;
+  }
+
   function generateResetToken() {
-    //console.log('type: '+typeof(crypto.randombytes(20));
-    return crypto.randomBytes(20).toString('hex')
-    return __addVariable__.randomBytes(20).toString('hex');
+    return randomString(20).toString('hex');
   }
 
   function generateExpiryDate() {
