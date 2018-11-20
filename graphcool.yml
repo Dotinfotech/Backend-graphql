@@ -3,57 +3,58 @@ types: ./types.graphql
 functions:
   signup:
     type: resolver
-    schema: src/signup.graphql
+    schema: src/extensions/signup/signup.graphql
     handler:
       code: 
-        src: src/signup.ts
+        src: src/extensions/signup/signup.ts
 
   authenticate:
     type: resolver
-    schema: src/authenticate.graphql
+    schema: src/extensions/authenticate/authenticate.graphql
     handler:
       code: 
-        src: src/authenticate.ts
+        src: src/extensions/authenticate/authenticate.ts
 
   loggedInUser:
     type: resolver
-    schema: src/loggedInUser.graphql
+    schema: src/extensions/loggedInUser/loggedInUser.graphql
     handler:
       code: 
-        src: src/loggedInUser.ts
+        src: src/extensions/loggedInUser/loggedInUser.ts
 
   updatePassword:
     type: resolver
-    schema: src/updatePassword.graphql
+    schema: src/extensions/updatePassword/updatePassword.graphql
     handler:
       code: 
-        src: src/updatePassword.ts
+        src: src/extensions/updatePassword/updatePassword.ts
    
   updateEmail:
     type: resolver
-    schema: src/updateEmail.graphql
+    schema: src/extensions/updateEmail/updateEmail.graphql
     handler:
       code: 
-        src: src/updateEmail.ts
+        src: src/extensions/updateEmail/updateEmail.ts
   
   passwordReset:
     type: resolver
-    schema: ./src/passwordReset.graphql
+    schema: ./src/extensions/passwordReset/passwordReset.graphql
     handler:
       code:
-        src: ./src/passwordReset.ts
+        src: ./src/extensions/passwordReset/passwordReset.ts
   
   triggerPasswordReset:
     type: resolver
-    schema: ./src/triggerPasswordReset.graphql
+    schema: ./src/extensions/triggerPasswordReset/triggerPasswordReset.graphql
     handler:
       code:
-        src: ./src/triggerPasswordReset.ts
+        src: ./src/extensions/triggerPasswordReset/triggerPasswordReset.ts
+        # environment: ${env:SENDGRID_API_KEY}
   
 permissions:
   #User
   - operation: User.read
-    fields: [email, id, createdAt, updatedAt]
+    fields: [email, id, createdAt, updatedAt,resetToken]
   - operation: User.create
     authenticated: true
   - operation: User.update

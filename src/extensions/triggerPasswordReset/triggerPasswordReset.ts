@@ -1,8 +1,15 @@
 import { fromEvent } from 'graphcool-lib';
 import * as randomString from 'randomstring';
+import * as sgMail from '@sendgrid/mail'
+import * as dotenv from "dotenv";
+dotenv.config();
+let sendKey: any = process.env.SENDGRID_API_KEY
+sgMail.setApiKey(sendKey);
 
 export = function (event) {
   const email = event.data.email
+  // const resetToken = event.data.resetToken
+  // const resetExpires = event.data.resetExpires
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
 
@@ -40,7 +47,7 @@ export = function (event) {
       })
   }
 
-  function toggleReset(graphcoolUserId) {
+  function toggleReset(graphcoolUserId: any) {
     return api.request(`
       mutation {
         updateUser(
@@ -49,17 +56,28 @@ export = function (event) {
           resetExpires: "${generateExpiryDate()}"
         ) {
           id
+          resetToken
         }
       }
     `)
+    // const resetToken = { resetToken }
+    // return api.request<{ PasswordResetToken: resetToken }>(mutation, resetToken)
+    //   .then(r => r.PasswordResetToken.resetToken)
   }
 
   return getGraphcoolUser(email)
     .then((graphcoolUser) => {
       if (graphcoolUser === null) {
-        return Promise.reject('Invalid Credentials') 
+        return Promise.reject('Invalid Credentials')
       } else {
-        return toggleReset(graphcoolUser.id)
+        const sendMail: any = {
+          to: email,
+          from: process.env.EMAIL_ID,
+          subject: 'Reset Password',
+          text: `Click the following link to reset the password: ${process.env.CLIENT_URL}/reset_password?token= ${generateResetToken}  and expiry DateTime ${generateExpiryDate}`
+        };
+        sgMail.send(sendMail);
+        return toggleReset(graphcoolUser.id);
       }
     })
     .then((response: any) => {

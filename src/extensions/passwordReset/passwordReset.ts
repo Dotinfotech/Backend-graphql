@@ -1,12 +1,6 @@
 import { fromEvent } from 'graphcool-lib'
 import * as bcrypt from 'bcryptjs'
-import * as dotenv from "dotenv";
-import * as sgMail from "@sendgrid/mail";
 
-dotenv.config();
-let sendgridKey: any = process.env.SENDGRID_API_KEY
-
-sgMail.setApiKey(sendgridKey);
 export = function (event:any) {
   const resetToken = event.data.resetToken
   const newPassword = event.data.password
