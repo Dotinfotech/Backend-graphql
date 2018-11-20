@@ -9,7 +9,7 @@ sgMail.setApiKey(sendKey);
 export = function (event) {
   const email = event.data.email
   // const resetToken = event.data.resetToken
-  // const resetExpires = event.data.resetExpires
+  // const resetExpire = event.data.resetExpire
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
 
@@ -74,7 +74,7 @@ export = function (event) {
           to: email,
           from: process.env.EMAIL_ID,
           subject: 'Reset Password',
-          text: `Click the following link to reset the password: ${process.env.CLIENT_URL}/reset_password?token= ${generateResetToken}  and expiry DateTime ${generateExpiryDate}`
+          text: `Click the following link to reset the password: ${process.env.CLIENT_URL}/reset_password?token=${generateResetToken()}  and expiry DateTime ${generateExpiryDate()}`
         };
         sgMail.send(sendMail);
         return toggleReset(graphcoolUser.id);
