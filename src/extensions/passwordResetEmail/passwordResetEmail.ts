@@ -1,27 +1,22 @@
 import { fromEvent } from 'graphcool-lib';
 import * as randomString from 'randomstring';
+import * as cryptoString from 'crypto-random-string';
 import * as sgMail from '@sendgrid/mail'
 import * as dotenv from "dotenv";
+
 dotenv.config();
 let sendKey: any = process.env.SENDGRID_API_KEY
 sgMail.setApiKey(sendKey);
 
 export = function (event) {
-  const email = event.data.email
+  const {email, resetToken, resetExpires} = event.data
   // const resetToken = event.data.resetToken
-  // const resetExpire = event.data.resetExpire
+  // const resetExpire = event.data.resetExpires
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
 
-  // function randomString(length) {
-  //   let chars: any = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  //   var result: any = '';
-  //   for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
-  //   return result;
-  // }
-
   function generateResetToken() {
-    return randomString.generate(20).toString('hex');
+    return cryptoString(20).toString('hex');
   }
 
   function generateExpiryDate() {
@@ -60,24 +55,29 @@ export = function (event) {
         }
       }
     `)
-    // const resetToken = { resetToken }
-    // return api.request<{ PasswordResetToken: resetToken }>(mutation, resetToken)
-    //   .then(r => r.PasswordResetToken.resetToken)
   }
-
+  
   return getGraphcoolUser(email)
     .then((graphcoolUser) => {
       if (graphcoolUser === null) {
         return Promise.reject('Invalid Credentials')
       } else {
+        return toggleReset(graphcoolUser.id);
+      }
+    })
+    .then((graphcoolUser) => {
+      if (graphcoolUser === null) {
+        return Promise.reject('Invalid Credentials')
+      } else {
+        // const resetToken1 = event.data.resetToken
+        // const resetExpire1 = event.data.resetExpire
         const sendMail: any = {
           to: email,
           from: process.env.EMAIL_ID,
           subject: 'Reset Password',
-          text: `Click the following link to reset the password: ${process.env.CLIENT_URL}/reset_password?token=${generateResetToken()}  and expiry DateTime ${generateExpiryDate()}`
+          text: `Click the following link to reset the password: ${process.env.CLIENT_URL}/reset_password?token=${resetToken} and link will expire in ${resetExpires}`
         };
-        sgMail.send(sendMail);
-        return toggleReset(graphcoolUser.id);
+        return sgMail.send(sendMail);
       }
     })
     .then((response: any) => {
@@ -86,7 +86,6 @@ export = function (event) {
     })
     .catch((error) => {
       console.log(error)
-
       return { error: 'An unexpected error occured.' }
     })
 }

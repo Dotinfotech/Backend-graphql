@@ -32,7 +32,7 @@
 `mutation{
 # This will trigger for resetting password 
 # Replace __EMAIL__
-  triggerPasswordReset(email:"__EMAIL__"){
+  passwordResetEmail(email:"__EMAIL__"){
     id
   }
 }`

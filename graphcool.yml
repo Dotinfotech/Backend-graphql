@@ -36,25 +36,30 @@ functions:
       code: 
         src: src/extensions/updateEmail/updateEmail.ts
   
-  passwordReset:
+  passwordResetToken:
     type: resolver
-    schema: ./src/extensions/passwordReset/passwordReset.graphql
+    schema: ./src/extensions/passwordResetToken/passwordResetToken.graphql
     handler:
       code:
-        src: ./src/extensions/passwordReset/passwordReset.ts
+        src: ./src/extensions/passwordResetToken/passwordResetToken.ts
   
-  triggerPasswordReset:
+  passwordResetEmail:
     type: resolver
-    schema: ./src/extensions/triggerPasswordReset/triggerPasswordReset.graphql
+    schema: ./src/extensions/passwordResetEmail/passwordResetEmail.graphql
     handler:
       code:
-        src: ./src/extensions/triggerPasswordReset/triggerPasswordReset.ts
-        # environment: ${env:SENDGRID_API_KEY}
+        src: ./src/extensions/passwordResetEmail/passwordResetEmail.ts
   
 permissions:
   #User
   - operation: User.read
-    fields: [email, id, createdAt, updatedAt,resetToken]
+    fields: 
+      - id 
+      - email 
+      - createdAt
+      - updatedAt
+      - resetExpires
+      - resetToken
   - operation: User.create
     authenticated: true
   - operation: User.update
@@ -68,6 +73,6 @@ rootTokens:
   - loggedInUser
   - updatePassword
   - updateEmail
-  - triggerPasswordReset
-  - passwordReset
+  - PasswordResetEmail
+  - passwordResetToken
 

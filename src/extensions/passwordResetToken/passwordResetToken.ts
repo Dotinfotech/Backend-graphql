@@ -1,14 +1,14 @@
 import { fromEvent } from 'graphcool-lib'
 import * as bcrypt from 'bcryptjs'
 
-export = function (event:any) {
+export = function (event) {
   const resetToken = event.data.resetToken
   const newPassword = event.data.password
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
   const saltRounds = 10
 
-  function getUserWithToken(resetToken: any) {
+  function getUserWithToken(resetToken) {
     return api.request(`
       query {
         User(resetToken: "${resetToken}") {
@@ -27,12 +27,12 @@ export = function (event:any) {
       })
   }
 
-  function updatePassword(id: any, newPasswordHash: any) {
+  function updatePassword(id, newPasswordHash) {
     return api.request(`
       mutation {
         updateUser(
           id: "${id}",
-          newPassword: "${newPasswordHash}",
+          password: "${newPasswordHash}",
           resetToken: null,
           resetExpires: null
         ) {
