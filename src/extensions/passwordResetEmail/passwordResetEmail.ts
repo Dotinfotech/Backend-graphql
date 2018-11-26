@@ -1,17 +1,16 @@
 import { fromEvent } from 'graphcool-lib';
-import * as randomString from 'randomstring';
+// import * as randomString from 'randomstring';
 import * as cryptoString from 'crypto-random-string';
-import * as sgMail from '@sendgrid/mail'
-import * as dotenv from "dotenv";
+import * as sgMail from '@sendgrid/mail';
+import * as dotenv from 'dotenv';
+import * as moment from 'moment';
 
 dotenv.config();
 let sendKey: any = process.env.SENDGRID_API_KEY
 sgMail.setApiKey(sendKey);
 
 export = function (event) {
-  const {email, resetToken, resetExpires} = event.data
-  // const resetToken = event.data.resetToken
-  // const resetExpire = event.data.resetExpires
+  const { email } = event.data
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
 
@@ -20,8 +19,13 @@ export = function (event) {
   }
 
   function generateExpiryDate() {
-    const now = new Date()
+    const now = new Date();
     return new Date(now.getTime() + 3600000).toISOString()
+  }
+
+  function dateFormat(date) {
+    let newDate = moment(date).format('llll');
+    return newDate;
   }
 
   function getGraphcoolUser(email) {
@@ -52,37 +56,38 @@ export = function (event) {
         ) {
           id
           resetToken
+          resetExpires
         }
       }
     `)
   }
-  
   return getGraphcoolUser(email)
-    .then((graphcoolUser) => {
+    .then((graphcoolUser: any) => {
       if (graphcoolUser === null) {
         return Promise.reject('Invalid Credentials')
       } else {
-        return toggleReset(graphcoolUser.id);
+        let id = toggleReset(graphcoolUser.id);
+        return id;
       }
     })
-    .then((graphcoolUser) => {
+    .then((graphcoolUser: any) => {
       if (graphcoolUser === null) {
         return Promise.reject('Invalid Credentials')
       } else {
-        // const resetToken1 = event.data.resetToken
-        // const resetExpire1 = event.data.resetExpire
+        const resetToken = graphcoolUser.updateUser.resetToken;
+        const resetExpire = graphcoolUser.updateUser.resetExpires;
         const sendMail: any = {
           to: email,
           from: process.env.EMAIL_ID,
           subject: 'Reset Password',
-          text: `Click the following link to reset the password: ${process.env.CLIENT_URL}/reset_password?token=${resetToken} and link will expire in ${resetExpires}`
+          text: `Click the following link to reset the password: ${process.env.CLIENT_URL}/reset_password?token=${resetToken} and link will expire in ${dateFormat(resetExpire)}`
         };
         return sgMail.send(sendMail);
       }
     })
     .then((response: any) => {
-      const id = response.updateUser.id
-      return { data: { id } }
+      const emailID = response.updateUser.email
+      return { data: { emailID } }
     })
     .catch((error) => {
       console.log(error)

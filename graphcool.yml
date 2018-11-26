@@ -58,8 +58,6 @@ permissions:
       - email 
       - createdAt
       - updatedAt
-      - resetExpires
-      - resetToken
   - operation: User.create
     authenticated: true
   - operation: User.update
