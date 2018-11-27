@@ -19,6 +19,7 @@ const passwordResetEmail = async (event: any) => {
   function generateResetToken() {
     // let test = cryptoString(20)
     let cryptoRandomString: any = cryptoString(20);
+    console.log(cryptoRandomString);
     return cryptoRandomString
   }
 
@@ -72,6 +73,7 @@ const passwordResetEmail = async (event: any) => {
         return Promise.reject('Invalid Credentials')
       } else {
         let id = toggleReset(graphcoolUser.id);
+        console.log('gc id ', id);
         return id
       }
     })
