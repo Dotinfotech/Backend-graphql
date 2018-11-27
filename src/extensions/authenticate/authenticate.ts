@@ -9,53 +9,55 @@ query UserQuery($email: String!) {
   }
 }`
 
-const getGraphcoolUser = (api: any, email: any) => {
-  return api.request(userQuery, { email })
+const getGraphcoolUser = async (api: any, email: any) => {
+  await api.request(userQuery, { email })
     .then(userQueryResult => {
       if (userQueryResult.error) {
         return Promise.reject(userQueryResult.error)
       } else {
-        return userQueryResult.User
+        let userQueryResultUser: any = userQueryResult.User
+        return userQueryResultUser
       }
     })
 }
 
-export = event => {
+export const authenticate = async (event) => {
   if (!event.context.graphcool.pat) {
     console.log('Please provide a valid root token!')
     return { error: 'Email Authentication not configured correctly.' }
   }
 
   // Retrieve payload from event
-  const email = event.data.email
-  const password = event.data.password
+  const { email, password } = event.data
 
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
 
-  return getGraphcoolUser(api, email)
-    .then(graphcoolUser => {
+  await getGraphcoolUser(api, email)
+    .then((graphcoolUser: any) => {
       if (!graphcoolUser) {
         return Promise.reject('Invalid Credentials')
       } else {
         return bcryptjs.compare(password, graphcoolUser.password)
-          .then(passwordCorrect => {
-            if (passwordCorrect) {
-              return graphcoolUser.id
-            } else {
-              return Promise.reject('Invalid Credentials')
-            }
-          })
+    .then((passwordCorrect: any) => {
+      if (passwordCorrect) {
+        return graphcoolUser.id
+      } else {
+        return Promise.reject('Invalid Credentials')
       }
     })
+}
+    })
     .then(graphcoolUserId => {
-      return graphcool.generateAuthToken(graphcoolUserId, 'User')
-    })
-    .then(token => {
-      return { data: { token } }
-    })
-    .catch(error => {
-      console.log(`Error: ${JSON.stringify(error)}`)
-      return { error: `An unexpected error occured` }
-    })
+      let generateAuthTokenID: any = graphcool.generateAuthToken(graphcoolUserId, 'User')
+      return generateAuthTokenID;
+})
+  .then(token => {
+    let tokenData = { data: { token } }
+    return tokenData;
+  })
+  .catch(error => {
+    console.log(`Error: ${JSON.stringify(error)}`)
+    return { error: `An unexpected error occured` }
+  })
 }

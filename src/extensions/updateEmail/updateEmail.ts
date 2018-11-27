@@ -2,32 +2,31 @@ import { fromEvent } from 'graphcool-lib'
 import * as bcrypt from 'bcryptjs'
 import * as validator from 'validator'
 
-export = function (event:any) {
-  const email = event.data.email
-  const newEmail = event.data.newEmail
-  const password = event.data.password
+export const updateEmail = async (event: any) => {
+  const { email, password, newEmail } = event.data
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
 
-  function getGraphcoolUser(email:any) {
-    return api.request(`
+  async function getGraphcoolUser(email: any) {
+    await api.request(`
     query {
       User(email: "${email}") {
         id
         password
       }
     }`)
-      .then((userQueryResult:any) => {
+      .then((userQueryResult: any) => {
         if (userQueryResult.error) {
           return Promise.reject(userQueryResult.error)
         } else {
-          return userQueryResult.User
+          let userQueryResultUser: any= userQueryResult.User
+          return userQueryResultUser;
         }
       })
   }
 
-  function updateGraphcoolUser(id:any, newEmail:any) {
-    return api.request(`
+  async function updateGraphcoolUser(id: any, newEmail: any) {
+    await api.request(`
       mutation {
         updateUser(
           id: "${id}",
@@ -36,14 +35,15 @@ export = function (event:any) {
           id
         }
       }`)
-      .then((userMutationResult:any) => {
-        return userMutationResult.updateUser.id
+      .then((userMutationResult: any) => {
+        let userMutationResultUpdateUser: any = userMutationResult.updateUser.id
+        return userMutationResultUpdateUser;
       })
   }
 
   if (validator.isEmail(newEmail)) {
     return getGraphcoolUser(email)
-      .then((graphcoolUser) => {
+      .then((graphcoolUser: any) => {
         if (graphcoolUser === null) {
           return Promise.reject("Invalid Credentials")
         } else {
@@ -58,7 +58,8 @@ export = function (event:any) {
         }
       })
       .then((id) => {
-        return { data: { id, email: newEmail } }
+        let DataNewEmail: any = { data: { id, email: newEmail } }
+        return DataNewEmail;
       })
       .catch((error) => {
         console.log(error)

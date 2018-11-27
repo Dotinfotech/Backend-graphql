@@ -20,33 +20,34 @@ mutation CreateUserMutation($email: String!, $passwordHash: String!) {
   }
 }`
 
-const getGraphcoolUser = (api: any, email: any) => {
-  return api.request(userQuery, { email })
+const getGraphcoolUser = async (api: any, email: any) => {
+  await api.request(userQuery, { email })
     .then(userQueryResult => {
       if (userQueryResult.error) {
         return Promise.reject(userQueryResult.error)
       } else {
-        return userQueryResult.User
+        let userQueryResultUser: any = userQueryResult.User
+        return userQueryResultUser;
       }
     })
 }
 
-const createGraphcoolUser = (api: any, email: any, passwordHash: any) => {
-  return api.request(createUserMutation, { email, passwordHash })
+const createGraphcoolUser = async (api: any, email: any, passwordHash: any) => {
+  await api.request(createUserMutation, { email, passwordHash })
     .then(userMutationResult => {
-      return userMutationResult.createUser.id
+      let userMutationResultCreateUserID: any = userMutationResult.createUser.id
+      return userMutationResultCreateUserID;
     })
 }
 
-export = function (event: any) {
+export const signup = async (event: any) => {
   if (!event.context.graphcool.pat) {
     console.log('Please provide a valid root token!')
     return { error: 'Email Signup not configured correctly.' }
   }
 
   // Retrieve payload from event
-  const email = event.data.email
-  const password = event.data.password
+  const { email, password } = event.data
 
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
@@ -56,7 +57,7 @@ export = function (event: any) {
 
   if (validator.isEmail(email)) {
     return getGraphcoolUser(api, email)
-      .then(graphcoolUser => {
+      .then((graphcoolUser: any) => {
         if (!graphcoolUser) {
           return bcryptjs.hash(password, salt)
             .then(hash => createGraphcoolUser(api, email, hash))
@@ -64,10 +65,11 @@ export = function (event: any) {
           return Promise.reject('Email already in use')
         }
       })
-      .then(graphcoolUserId => {
+      .then((graphcoolUserId: any) => {
         return graphcool.generateAuthToken(graphcoolUserId, 'User')
           .then(token => {
-            return { data: { id: graphcoolUserId, token } }
+            let DataToken: any = { data: { id: graphcoolUserId, token } }
+            return DataToken;
           })
       })
       .catch(error => {

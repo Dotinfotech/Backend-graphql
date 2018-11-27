@@ -1,33 +1,32 @@
 import { fromEvent } from 'graphcool-lib'
 import * as  bcrypt from 'bcryptjs'
 
-export = function (event:any) {
-  const email = event.data.email
-  const password = event.data.password
-  const newPassword = event.data.newPassword
+export = function (event: any) {
+  const { email, password, newPassword } = event.data.email
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
   const saltRounds = 10
 
-  function getGraphcoolUser(email:any) {
-    return api.request(`
+  async function getGraphcoolUser(email: any) {
+    await api.request(`
     query {
       User(email: "${email}"){
         id
         password
       }
     }`)
-      .then((userQueryResult:any) => {
+      .then((userQueryResult: any) => {
         if (userQueryResult.error) {
           return Promise.reject(userQueryResult.error)
         } else {
-          return userQueryResult.User
+          let userQueryResultUser = userQueryResult.User
+          return userQueryResultUser;
         }
       })
   }
 
-  function updateGraphcoolUser(id:any, newPasswordHash:any) {
-    return api.request(`
+  async function updateGraphcoolUser(id: any, newPasswordHash: any) {
+    await api.request(`
       mutation {
         updateUser(
           id:"${id}",
@@ -36,13 +35,14 @@ export = function (event:any) {
           id
         }
       }`)
-      .then((userMutationResult:any) => {
-        return userMutationResult.updateUser.id
+      .then((userMutationResult: any) => {
+        let userMutationResultUpdateUser = userMutationResult.updateUser.id
+        return userMutationResultUpdateUser;
       })
   }
 
   return getGraphcoolUser(email)
-    .then((graphcoolUser) => {
+    .then((graphcoolUser: any) => {
       if (graphcoolUser === null) {
         return Promise.reject("Invalid Credentials")
       } else {
@@ -58,12 +58,11 @@ export = function (event:any) {
       }
     })
     .then((id) => {
-      return { data: { id } }
+      let DataID = { data: { id } }
+      return DataID;
     })
     .catch((error) => {
       console.log(error)
-
-      // don't expose error message to client!
       return { error: 'An unexpected error occured.' }
     })
 }

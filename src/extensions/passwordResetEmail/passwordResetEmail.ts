@@ -1,5 +1,4 @@
 import { fromEvent } from 'graphcool-lib';
-// import * as randomString from 'randomstring';
 import * as cryptoString from 'crypto-random-string';
 import * as sgMail from '@sendgrid/mail';
 import * as dotenv from 'dotenv';
@@ -9,18 +8,20 @@ dotenv.config();
 let sendKey: any = process.env.SENDGRID_API_KEY
 sgMail.setApiKey(sendKey);
 
-export = function (event) {
+export const passwordResetEmail = async (event) => {
   const { email } = event.data
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
 
   function generateResetToken() {
-    return cryptoString(20).toString('hex');
+    let cryptoRandomString = cryptoString(20).toString('hex');
+    return cryptoRandomString;
   }
 
   function generateExpiryDate() {
     const now = new Date();
-    return new Date(now.getTime() + 3600000).toISOString()
+    const nowDate = new Date(now.getTime() + 3600000).toISOString()
+    return nowDate;
   }
 
   function dateFormat(date) {
@@ -28,8 +29,8 @@ export = function (event) {
     return newDate;
   }
 
-  function getGraphcoolUser(email) {
-    return api.request(`
+  async function getGraphcoolUser(email) {
+    await api.request(`
     query {
       User(email: "${email}"){
         id
@@ -46,8 +47,8 @@ export = function (event) {
       })
   }
 
-  function toggleReset(graphcoolUserId: any) {
-    return api.request(`
+  async function toggleReset(graphcoolUserId: any) {
+    await api.request(`
       mutation {
         updateUser(
           id: "${graphcoolUserId}",
@@ -61,7 +62,7 @@ export = function (event) {
       }
     `)
   }
-  return getGraphcoolUser(email)
+  await getGraphcoolUser(email)
     .then((graphcoolUser: any) => {
       if (graphcoolUser === null) {
         return Promise.reject('Invalid Credentials')
@@ -82,7 +83,8 @@ export = function (event) {
           subject: 'Reset Password',
           text: `Click the following link to reset the password: ${process.env.CLIENT_URL}/reset_password?token=${resetToken} and link will expire in ${dateFormat(resetExpire)}`
         };
-        return sgMail.send(sendMail);
+        let sgMailSend = sgMail.send(sendMail);
+        return sgMailSend;
       }
     })
     .then((response: any) => {
