@@ -1,35 +1,39 @@
 import { fromEvent } from 'graphcool-lib';
-import * as cryptoString from 'crypto-random-string';
+import cryptoString = require('crypto-random-string');
 import * as sgMail from '@sendgrid/mail';
 import * as dotenv from 'dotenv';
 import * as moment from 'moment';
 
 dotenv.config();
+
 let sendKey: any = process.env.SENDGRID_API_KEY
 sgMail.setApiKey(sendKey);
 
-export const passwordResetEmail = async (event) => {
+const passwordResetEmail = async (event: any) => {
+
   const { email } = event.data
+
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
 
   function generateResetToken() {
-    let cryptoRandomString = cryptoString(20).toString('hex');
-    return cryptoRandomString;
+    // let test = cryptoString(20)
+    let cryptoRandomString: any = cryptoString(20);
+    return cryptoRandomString
   }
 
   function generateExpiryDate() {
     const now = new Date();
     const nowDate = new Date(now.getTime() + 3600000).toISOString()
-    return nowDate;
+    return nowDate
   }
 
-  function dateFormat(date) {
-    let newDate = moment(date).format('llll');
-    return newDate;
+  function dateFormat(date: any) {
+    let formatDate = moment(date).format('llll');
+    return formatDate
   }
 
-  async function getGraphcoolUser(email) {
+  const getGraphcoolUser = async function getGraphcoolUser(email: any) {
     await api.request(`
     query {
       User(email: "${email}"){
@@ -47,7 +51,7 @@ export const passwordResetEmail = async (event) => {
       })
   }
 
-  async function toggleReset(graphcoolUserId: any) {
+  const toggleReset = async function toggleReset(graphcoolUserId: any) {
     await api.request(`
       mutation {
         updateUser(
@@ -68,7 +72,7 @@ export const passwordResetEmail = async (event) => {
         return Promise.reject('Invalid Credentials')
       } else {
         let id = toggleReset(graphcoolUser.id);
-        return id;
+        return id
       }
     })
     .then((graphcoolUser: any) => {
@@ -84,7 +88,7 @@ export const passwordResetEmail = async (event) => {
           text: `Click the following link to reset the password: ${process.env.CLIENT_URL}/reset_password?token=${resetToken} and link will expire in ${dateFormat(resetExpire)}`
         };
         let sgMailSend = sgMail.send(sendMail);
-        return sgMailSend;
+        return sgMailSend
       }
     })
     .then((response: any) => {
@@ -96,3 +100,4 @@ export const passwordResetEmail = async (event) => {
       return { error: 'An unexpected error occured.' }
     })
 }
+export default passwordResetEmail;

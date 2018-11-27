@@ -1,14 +1,17 @@
 import { fromEvent } from 'graphcool-lib'
 import * as bcrypt from 'bcryptjs'
 
-export const passwordResetToken = async (event) => {
+const passwordResetToken = async (event: any) => {
+
   const resetToken = event.data.resetToken
   const newPassword = event.data.password
+
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
+
   const saltRounds = 10
 
-  const getUserWithToken: any = async function getUserWithToken(resetToken) {
+  const getUserWithToken: any = async function getUserWithToken(resetToken:any) {
     await api.request(`
       query {
         User(resetToken: "${resetToken}") {
@@ -28,7 +31,7 @@ export const passwordResetToken = async (event) => {
       })
   }
 
-  async function updatePassword(id, newPasswordHash) {
+  async function updatePassword(id: any, newPasswordHash: any) {
     await api.request(`
       mutation {
         updateUser(
@@ -44,9 +47,11 @@ export const passwordResetToken = async (event) => {
   }
 
   await getUserWithToken(resetToken)
-    .then(graphcoolUser => {
+    .then((graphcoolUser: any) => {
+
       const userId: any = graphcoolUser.id
       const resetExpires: any = graphcoolUser.resetExpires
+
       if (new Date() > new Date(resetExpires)) {
         return Promise.reject('Token expired.')
       } else {
@@ -56,10 +61,9 @@ export const passwordResetToken = async (event) => {
           .catch(error => ({ error: error.toString() }))
       }
     })
-    .catch((error) => {
+    .catch((error: any) => {
       console.log(error)
       return { error: 'An unexpected error occured.' }
     })
 }
-
-
+export default passwordResetToken;

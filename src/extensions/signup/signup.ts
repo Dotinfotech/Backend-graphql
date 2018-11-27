@@ -22,25 +22,25 @@ mutation CreateUserMutation($email: String!, $passwordHash: String!) {
 
 const getGraphcoolUser = async (api: any, email: any) => {
   await api.request(userQuery, { email })
-    .then(userQueryResult => {
+    .then((userQueryResult: any) => {
       if (userQueryResult.error) {
         return Promise.reject(userQueryResult.error)
       } else {
         let userQueryResultUser: any = userQueryResult.User
-        return userQueryResultUser;
+        return userQueryResultUser
       }
     })
 }
 
 const createGraphcoolUser = async (api: any, email: any, passwordHash: any) => {
   await api.request(createUserMutation, { email, passwordHash })
-    .then(userMutationResult => {
+    .then((userMutationResult: any) => {
       let userMutationResultCreateUserID: any = userMutationResult.createUser.id
-      return userMutationResultCreateUserID;
+      return userMutationResultCreateUserID
     })
 }
 
-export const signup = async (event: any) => {
+const signup = async (event: any) => {
   if (!event.context.graphcool.pat) {
     console.log('Please provide a valid root token!')
     return { error: 'Email Signup not configured correctly.' }
@@ -69,7 +69,7 @@ export const signup = async (event: any) => {
         return graphcool.generateAuthToken(graphcoolUserId, 'User')
           .then(token => {
             let DataToken: any = { data: { id: graphcoolUserId, token } }
-            return DataToken;
+            return DataToken
           })
       })
       .catch(error => {
@@ -80,3 +80,4 @@ export const signup = async (event: any) => {
     return { error: 'Not a valid email' }
   }
 }
+export default signup;

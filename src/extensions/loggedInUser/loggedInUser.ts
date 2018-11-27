@@ -10,21 +10,20 @@ query UserQuery($userId: ID!) {
 
 const getUser = async (api: any, userId: any) => {
   await api.request(userQuery, { userId })
-    .then(userQueryResult => {
+    .then((userQueryResult: any) => {
       let userQueryResultData = userQueryResult.User
-      return userQueryResultData;
+      return userQueryResultData
     })
-    .catch(error => {
+    .catch((error: any) => {
       console.log(`Error: ${JSON.stringify(error)}`)
       return { error: `An unexpected error occured` }
     })
 }
 
-export const loggedInUser = async (event) => {
+const loggedInUser = async (event: any) => {
   if (!event.context.auth || !event.context.auth.nodeId) {
     console.log(`No auth context`)
-    let DataID = { data: { id: null } }
-    return DataID;
+    return { data: { id: null } }
   }
 
   const userId = event.context.auth.nodeId
@@ -34,16 +33,16 @@ export const loggedInUser = async (event) => {
   const api = graphcool.api('simple/v1')
 
   return getUser(api, userId)
-    .then((emailUser:any) => {
+    .then((emailUser: any) => {
       if (!emailUser) {
         return { error: `No user with id: ${userId}` }
       }
       let DataEmaiUser = { data: emailUser }
-      return DataEmaiUser;
+      return DataEmaiUser
     })
     .catch(error => {
       console.log(`Error: ${JSON.stringify(error)}`)
       return { error: `An unexpected error occured` }
     })
-
 }
+export default loggedInUser;

@@ -2,12 +2,14 @@ import { fromEvent } from 'graphcool-lib'
 import * as bcrypt from 'bcryptjs'
 import * as validator from 'validator'
 
-export const updateEmail = async (event: any) => {
+ const updateEmail = async (event: any) => {
+
   const { email, password, newEmail } = event.data
+
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
 
-  async function getGraphcoolUser(email: any) {
+  const getGraphcoolUser = async function getGraphcoolUser(email: any) {
     await api.request(`
     query {
       User(email: "${email}") {
@@ -19,13 +21,13 @@ export const updateEmail = async (event: any) => {
         if (userQueryResult.error) {
           return Promise.reject(userQueryResult.error)
         } else {
-          let userQueryResultUser: any= userQueryResult.User
-          return userQueryResultUser;
+          let userQueryResultUser: any = userQueryResult.User
+          return userQueryResultUser
         }
       })
   }
 
-  async function updateGraphcoolUser(id: any, newEmail: any) {
+  const updateGraphcoolUser = async function updateGraphcoolUser(id: any, newEmail: any) {
     await api.request(`
       mutation {
         updateUser(
@@ -37,7 +39,7 @@ export const updateEmail = async (event: any) => {
       }`)
       .then((userMutationResult: any) => {
         let userMutationResultUpdateUser: any = userMutationResult.updateUser.id
-        return userMutationResultUpdateUser;
+        return userMutationResultUpdateUser
       })
   }
 
@@ -57,17 +59,17 @@ export const updateEmail = async (event: any) => {
             })
         }
       })
-      .then((id) => {
-        let DataNewEmail: any = { data: { id, email: newEmail } }
-        return DataNewEmail;
+      .then((id:any) => {
+        let DataID: any = { data: { id } }
+        return DataID
       })
-      .catch((error) => {
+      .catch((error:any) => {
         console.log(error)
-
-        // don't expose error message to client!
         return { error: 'An unexpected error occured.' }
       })
   } else {
     return { error: "Not a valid email" }
   }
 }
+
+export default updateEmail;

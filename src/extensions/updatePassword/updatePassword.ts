@@ -1,13 +1,16 @@
 import { fromEvent } from 'graphcool-lib'
 import * as  bcrypt from 'bcryptjs'
 
-export = function (event: any) {
-  const { email, password, newPassword } = event.data.email
+const updatePassword = async (event: any) => {
+
+  const { email, password, newPassword } = event.data
+
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
+
   const saltRounds = 10
 
-  async function getGraphcoolUser(email: any) {
+  const getGraphcoolUser = async function getGraphcoolUser(email: any) {
     await api.request(`
     query {
       User(email: "${email}"){
@@ -20,12 +23,12 @@ export = function (event: any) {
           return Promise.reject(userQueryResult.error)
         } else {
           let userQueryResultUser = userQueryResult.User
-          return userQueryResultUser;
+          return userQueryResultUser
         }
       })
   }
 
-  async function updateGraphcoolUser(id: any, newPasswordHash: any) {
+  const updateGraphcoolUser = async function updateGraphcoolUser(id: any, newPasswordHash: any) {
     await api.request(`
       mutation {
         updateUser(
@@ -37,7 +40,7 @@ export = function (event: any) {
       }`)
       .then((userMutationResult: any) => {
         let userMutationResultUpdateUser = userMutationResult.updateUser.id
-        return userMutationResultUpdateUser;
+        return userMutationResultUpdateUser
       })
   }
 
@@ -59,10 +62,12 @@ export = function (event: any) {
     })
     .then((id) => {
       let DataID = { data: { id } }
-      return DataID;
+      return DataID
     })
     .catch((error) => {
       console.log(error)
       return { error: 'An unexpected error occured.' }
     })
 }
+
+export default updatePassword;

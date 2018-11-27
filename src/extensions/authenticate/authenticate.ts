@@ -11,7 +11,7 @@ query UserQuery($email: String!) {
 
 const getGraphcoolUser = async (api: any, email: any) => {
   await api.request(userQuery, { email })
-    .then(userQueryResult => {
+    .then((userQueryResult: any)=> {
       if (userQueryResult.error) {
         return Promise.reject(userQueryResult.error)
       } else {
@@ -21,7 +21,7 @@ const getGraphcoolUser = async (api: any, email: any) => {
     })
 }
 
-export const authenticate = async (event) => {
+const authenticate = async (event: any) => {
   if (!event.context.graphcool.pat) {
     console.log('Please provide a valid root token!')
     return { error: 'Email Authentication not configured correctly.' }
@@ -50,14 +50,15 @@ export const authenticate = async (event) => {
     })
     .then(graphcoolUserId => {
       let generateAuthTokenID: any = graphcool.generateAuthToken(graphcoolUserId, 'User')
-      return generateAuthTokenID;
+      return generateAuthTokenID
 })
   .then(token => {
     let tokenData = { data: { token } }
-    return tokenData;
+    return tokenData
   })
   .catch(error => {
     console.log(`Error: ${JSON.stringify(error)}`)
     return { error: `An unexpected error occured` }
   })
 }
+export default authenticate;
