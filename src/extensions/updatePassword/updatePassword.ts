@@ -2,9 +2,7 @@ import { fromEvent } from 'graphcool-lib'
 import * as  bcrypt from 'bcryptjs'
 
 export = function (event:any) {
-  const email = event.data.email
-  const password = event.data.password
-  const newPassword = event.data.newPassword
+  const {email,password,newPassword} = event.data.email
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
   const saltRounds = 10
@@ -62,8 +60,6 @@ export = function (event:any) {
     })
     .catch((error) => {
       console.log(error)
-
-      // don't expose error message to client!
       return { error: 'An unexpected error occured.' }
     })
 }

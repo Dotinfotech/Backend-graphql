@@ -22,7 +22,7 @@ mutation CreateUserMutation($email: String!, $passwordHash: String!) {
 
 const getGraphcoolUser = (api: any, email: any) => {
   return api.request(userQuery, { email })
-    .then(userQueryResult => {
+    .then((userQueryResult:any) => {
       if (userQueryResult.error) {
         return Promise.reject(userQueryResult.error)
       } else {
@@ -33,7 +33,7 @@ const getGraphcoolUser = (api: any, email: any) => {
 
 const createGraphcoolUser = (api: any, email: any, passwordHash: any) => {
   return api.request(createUserMutation, { email, passwordHash })
-    .then(userMutationResult => {
+    .then((userMutationResult:any) => {
       return userMutationResult.createUser.id
     })
 }
@@ -45,8 +45,7 @@ export = function (event: any) {
   }
 
   // Retrieve payload from event
-  const email = event.data.email
-  const password = event.data.password
+  const {email,password} = event.data.email
 
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
@@ -56,7 +55,7 @@ export = function (event: any) {
 
   if (validator.isEmail(email)) {
     return getGraphcoolUser(api, email)
-      .then(graphcoolUser => {
+      .then((graphcoolUser:any) => {
         if (!graphcoolUser) {
           return bcryptjs.hash(password, salt)
             .then(hash => createGraphcoolUser(api, email, hash))
@@ -64,13 +63,13 @@ export = function (event: any) {
           return Promise.reject('Email already in use')
         }
       })
-      .then(graphcoolUserId => {
+      .then((graphcoolUserId:any) => {
         return graphcool.generateAuthToken(graphcoolUserId, 'User')
           .then(token => {
             return { data: { id: graphcoolUserId, token } }
           })
       })
-      .catch(error => {
+      .catch((error:any) => {
         console.log(`Error: ${JSON.stringify(error)}`)
         return { error: 'An unexpected error occured.' }
       })

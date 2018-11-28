@@ -2,14 +2,14 @@ import { fromEvent } from 'graphcool-lib'
 import * as bcrypt from 'bcryptjs'
 import * as validator from 'validator'
 
-export = function (event:any) {
-  const email = event.data.email
+export = function (event: any) {
+  const { email, password } = event.data.email
   const newEmail = event.data.newEmail
-  const password = event.data.password
+
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
 
-  function getGraphcoolUser(email:any) {
+  function getGraphcoolUser(email: any) {
     return api.request(`
     query {
       User(email: "${email}") {
@@ -17,7 +17,7 @@ export = function (event:any) {
         password
       }
     }`)
-      .then((userQueryResult:any) => {
+      .then((userQueryResult: any) => {
         if (userQueryResult.error) {
           return Promise.reject(userQueryResult.error)
         } else {
@@ -26,7 +26,7 @@ export = function (event:any) {
       })
   }
 
-  function updateGraphcoolUser(id:any, newEmail:any) {
+  function updateGraphcoolUser(id: any, newEmail: any) {
     return api.request(`
       mutation {
         updateUser(
@@ -36,7 +36,7 @@ export = function (event:any) {
           id
         }
       }`)
-      .then((userMutationResult:any) => {
+      .then((userMutationResult: any) => {
         return userMutationResult.updateUser.id
       })
   }
@@ -57,13 +57,11 @@ export = function (event:any) {
             })
         }
       })
-      .then((id) => {
+      .then((id: any) => {
         return { data: { id, email: newEmail } }
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.log(error)
-
-        // don't expose error message to client!
         return { error: 'An unexpected error occured.' }
       })
   } else {

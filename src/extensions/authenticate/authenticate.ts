@@ -11,7 +11,7 @@ query UserQuery($email: String!) {
 
 const getGraphcoolUser = (api: any, email: any) => {
   return api.request(userQuery, { email })
-    .then(userQueryResult => {
+    .then((userQueryResult:any) => {
       if (userQueryResult.error) {
         return Promise.reject(userQueryResult.error)
       } else {
@@ -20,7 +20,7 @@ const getGraphcoolUser = (api: any, email: any) => {
     })
 }
 
-export = event => {
+export = (event:any) => {
   if (!event.context.graphcool.pat) {
     console.log('Please provide a valid root token!')
     return { error: 'Email Authentication not configured correctly.' }
@@ -34,7 +34,7 @@ export = event => {
   const api = graphcool.api('simple/v1')
 
   return getGraphcoolUser(api, email)
-    .then(graphcoolUser => {
+    .then((graphcoolUser:any) => {
       if (!graphcoolUser) {
         return Promise.reject('Invalid Credentials')
       } else {
@@ -48,13 +48,13 @@ export = event => {
           })
       }
     })
-    .then(graphcoolUserId => {
+    .then((graphcoolUserId:any) => {
       return graphcool.generateAuthToken(graphcoolUserId, 'User')
     })
-    .then(token => {
+    .then((token:any) => {
       return { data: { token } }
     })
-    .catch(error => {
+    .catch((error:any) => {
       console.log(`Error: ${JSON.stringify(error)}`)
       return { error: `An unexpected error occured` }
     })

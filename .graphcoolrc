@@ -1,3 +1,3 @@
 targets:
-  LoginRegisterUser: shared-eu-west-1/cjogubb5c2xio018483ms7e2i
-  default: LoginRegisterUser
+  Admin Panel: shared-eu-west-1/cjp12eu1p7sqg0185o5za8ft7
+  default: Admin Panel
