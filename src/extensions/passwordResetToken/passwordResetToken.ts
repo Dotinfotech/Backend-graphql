@@ -1,6 +1,42 @@
 import { fromEvent } from 'graphcool-lib'
 import * as bcrypt from 'bcryptjs'
 
+
+const getUserWithToken: any = async (api: any, resetToken: any) => {
+  return await api.request(`
+    query {
+      User(resetToken: "${resetToken}") {
+        id
+        resetExpires
+      }
+    }`)
+    .then((userQueryResult: any) => {
+      if (userQueryResult.error) {
+        return Promise.reject(userQueryResult.error)
+      } else if (!userQueryResult.User || !userQueryResult.User.id || !userQueryResult.User.resetExpires) {
+        return Promise.reject('Not a valid token')
+      } else {
+        let userQueryResultUser = userQueryResult.User
+        return userQueryResultUser
+      }
+    })
+}
+
+const updatePassword: any = async (api: any, id: any, newPasswordHash: any) => {
+  return await api.request(`
+    mutation {
+      updateUser(
+        id: "${id}",
+        password: "${newPasswordHash}",
+        resetToken: null,
+        resetExpires: null
+      ) {
+        id
+      }
+    }`)
+    .then((userMutationResult: any) => (userMutationResult.updateUser.id))
+}
+
 const passwordResetToken = async (event: any) => {
 
   const resetToken = event.data.resetToken
@@ -11,42 +47,7 @@ const passwordResetToken = async (event: any) => {
 
   const saltRounds = 10
 
-  const getUserWithToken: any = async function getUserWithToken(resetToken:any) {
-    await api.request(`
-      query {
-        User(resetToken: "${resetToken}") {
-          id
-          resetExpires
-        }
-      }`)
-      .then((userQueryResult: any) => {
-        if (userQueryResult.error) {
-          return Promise.reject(userQueryResult.error)
-        } else if (!userQueryResult.User || !userQueryResult.User.id || !userQueryResult.User.resetExpires) {
-          return Promise.reject('Not a valid token')
-        } else {
-          let userQueryResultUser = userQueryResult.User
-          return userQueryResultUser
-        }
-      })
-  }
-
-  async function updatePassword(id: any, newPasswordHash: any) {
-    await api.request(`
-      mutation {
-        updateUser(
-          id: "${id}",
-          password: "${newPasswordHash}",
-          resetToken: null,
-          resetExpires: null
-        ) {
-          id
-        }
-      }`)
-      .then((userMutationResult: any) => (userMutationResult.updateUser.id))
-  }
-
-  await getUserWithToken(resetToken)
+  return await getUserWithToken(resetToken)
     .then((graphcoolUser: any) => {
 
       const userId: any = graphcoolUser.id
@@ -63,7 +64,7 @@ const passwordResetToken = async (event: any) => {
     })
     .catch((error: any) => {
       console.log(error)
-      return { error: 'An unexpected error occured.' }
+      return error
     })
 }
 export default passwordResetToken;

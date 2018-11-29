@@ -1,63 +1,59 @@
 types: ./types.graphql
 
 functions:
-  signup:
+  signupUser:
     type: resolver
     schema: src/extensions/signup/signup.graphql
     handler:
-      code: 
+      code:
         src: src/extensions/signup/signup.ts
 
-  authenticate:
+  loginUser:
     type: resolver
-    schema: src/extensions/authenticate/authenticate.graphql
+    schema: src/extensions/login/login.graphql
     handler:
-      code: 
-        src: src/extensions/authenticate/authenticate.ts
+      code:
+        src: src/extensions/login/login.ts
 
   loggedInUser:
     type: resolver
     schema: src/extensions/loggedInUser/loggedInUser.graphql
     handler:
-      code: 
+      code:
         src: src/extensions/loggedInUser/loggedInUser.ts
 
   updatePassword:
     type: resolver
     schema: src/extensions/updatePassword/updatePassword.graphql
     handler:
-      code: 
+      code:
         src: src/extensions/updatePassword/updatePassword.ts
-   
+
   updateEmail:
     type: resolver
     schema: src/extensions/updateEmail/updateEmail.graphql
     handler:
-      code: 
+      code:
         src: src/extensions/updateEmail/updateEmail.ts
-  
+
   passwordResetToken:
     type: resolver
     schema: ./src/extensions/passwordResetToken/passwordResetToken.graphql
     handler:
       code:
         src: ./src/extensions/passwordResetToken/passwordResetToken.ts
-  
+
   passwordResetEmail:
     type: resolver
     schema: ./src/extensions/passwordResetEmail/passwordResetEmail.graphql
     handler:
       code:
         src: ./src/extensions/passwordResetEmail/passwordResetEmail.ts
-  
+
 permissions:
   #User
   - operation: User.read
-    fields: 
-      - id 
-      - email 
-      - createdAt
-      - updatedAt
+    authenticated: true
   - operation: User.create
     authenticated: true
   - operation: User.update
@@ -65,12 +61,11 @@ permissions:
   - operation: User.delete
     authenticated: true
 
-rootTokens: 
-  - signup
-  - authenticate
+rootTokens:
+  - signupUser
+  - loginUser
   - loggedInUser
   - updatePassword
   - updateEmail
   - PasswordResetEmail
   - passwordResetToken
-

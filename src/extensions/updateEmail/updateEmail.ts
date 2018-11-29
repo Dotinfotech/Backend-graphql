@@ -2,15 +2,15 @@ import { fromEvent } from 'graphcool-lib'
 import * as bcrypt from 'bcryptjs'
 import * as validator from 'validator'
 
- const updateEmail = async (event: any) => {
+const updateEmail = async (event: any) => {
 
   const { email, password, newEmail } = event.data
 
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
 
-  const getGraphcoolUser = async function getGraphcoolUser(email: any) {
-    await api.request(`
+  const getGraphcoolUser = async (email: any) => {
+    return await api.request(`
     query {
       User(email: "${email}") {
         id
@@ -27,8 +27,8 @@ import * as validator from 'validator'
       })
   }
 
-  const updateGraphcoolUser = async function updateGraphcoolUser(id: any, newEmail: any) {
-    await api.request(`
+  const updateGraphcoolUser = async (id: any, newEmail: any) => {
+    return await api.request(`
       mutation {
         updateUser(
           id: "${id}",
@@ -44,7 +44,7 @@ import * as validator from 'validator'
   }
 
   if (validator.isEmail(newEmail)) {
-    return getGraphcoolUser(email)
+    return await getGraphcoolUser(email)
       .then((graphcoolUser: any) => {
         if (graphcoolUser === null) {
           return Promise.reject("Invalid Credentials")
@@ -59,13 +59,13 @@ import * as validator from 'validator'
             })
         }
       })
-      .then((id:any) => {
+      .then((id: any) => {
         let DataID: any = { data: { id } }
         return DataID
       })
-      .catch((error:any) => {
+      .catch((error: any) => {
         console.log(error)
-        return { error: 'An unexpected error occured.' }
+        return error
       })
   } else {
     return { error: "Not a valid email" }

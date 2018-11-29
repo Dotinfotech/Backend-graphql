@@ -3,6 +3,7 @@ import cryptoString = require('crypto-random-string');
 import * as sgMail from '@sendgrid/mail';
 import * as dotenv from 'dotenv';
 import * as moment from 'moment';
+import { formatDate } from 'tough-cookie';
 
 dotenv.config();
 
@@ -17,25 +18,25 @@ const passwordResetEmail = async (event: any) => {
   const api = graphcool.api('simple/v1')
 
   function generateResetToken() {
-    // let test = cryptoString(20)
     let cryptoRandomString: any = cryptoString(20);
-    console.log(cryptoRandomString);
+    console.log('crypt string', cryptoRandomString);
     return cryptoRandomString
   }
 
   function generateExpiryDate() {
     const now = new Date();
-    const nowDate = new Date(now.getTime() + 3600000).toISOString()
+    const nowDate: any = new Date(now.getTime() + 3600000).toISOString()
+    console.log('ex date', nowDate)
     return nowDate
   }
 
   function dateFormat(date: any) {
-    let formatDate = moment(date).format('llll');
+    let formatDate = moment(date).endOf(date).fromNow();
     return formatDate
   }
 
-  const getGraphcoolUser = async function getGraphcoolUser(email: any) {
-    await api.request(`
+  const getGraphcoolUser = async (email: any) => {
+    return await api.request(`
     query {
       User(email: "${email}"){
         id
@@ -52,8 +53,8 @@ const passwordResetEmail = async (event: any) => {
       })
   }
 
-  const toggleReset = async function toggleReset(graphcoolUserId: any) {
-    await api.request(`
+  const toggleReset = async (graphcoolUserId: any) => {
+    return await api.request(`
       mutation {
         updateUser(
           id: "${graphcoolUserId}",
@@ -67,39 +68,44 @@ const passwordResetEmail = async (event: any) => {
       }
     `)
   }
-  await getGraphcoolUser(email)
+  return await getGraphcoolUser(email)
     .then((graphcoolUser: any) => {
-      if (graphcoolUser === null) {
-        return Promise.reject('Invalid Credentials')
-      } else {
-        let id = toggleReset(graphcoolUser.id);
-        console.log('gc id ', id);
+      if (graphcoolUser !== null) {
+        let id: any = toggleReset(graphcoolUser.id);
+        console.log('gc id ', id)
         return id
+      } else {
+        return Promise.reject('Invalid Credentials')
       }
     })
     .then((graphcoolUser: any) => {
       if (graphcoolUser === null) {
         return Promise.reject('Invalid Credentials')
       } else {
-        const resetToken = graphcoolUser.updateUser.resetToken;
-        const resetExpire = graphcoolUser.updateUser.resetExpires;
+        const resetToken: any = graphcoolUser.updateUser.resetToken
+        const resetExpire: any = graphcoolUser.updateUser.resetExpires
+        console.log('Reset Token ', resetToken)
+        console.log('Reset Expire ', dateFormat(resetExpire))
         const sendMail: any = {
           to: email,
           from: process.env.EMAIL_ID,
           subject: 'Reset Password',
-          text: `Click the following link to reset the password: ${process.env.CLIENT_URL}/reset_password?token=${resetToken} and link will expire in ${dateFormat(resetExpire)}`
+          text: `Click the following link to reset the password: ${process.env.CLIENT_URL}/reset_password?token=${resetToken}
+           and link will expire in ${dateFormat(resetExpire)}`
         };
-        let sgMailSend = sgMail.send(sendMail);
+        let sgMailSend: any = sgMail.send(sendMail);
+        console.log('mail data ',sgMailSend)
         return sgMailSend
       }
     })
     .then((response: any) => {
-      const emailID = response.updateUser.email
-      return { data: { emailID } }
+      const newId: any = response.graphcoolUser.updateUser.id
+      console.log('res id', newId)
+      return { data: { newId } }
     })
     .catch((error) => {
       console.log(error)
-      return { error: 'An unexpected error occured.' }
+      return error
     })
 }
 export default passwordResetEmail;

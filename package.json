@@ -20,7 +20,8 @@
     "@types/validator": "^9.4.3"
   },
   "scripts": {
-    "test": "graphcool console"
+    "test": "graphcool console",
+    "lint": "tslint 'src/**/*.{ts,tsx}'"
   },
   "author": "Anuj",
   "license": "ISC"

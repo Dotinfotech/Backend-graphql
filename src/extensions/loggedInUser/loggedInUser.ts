@@ -9,7 +9,7 @@ query UserQuery($userId: ID!) {
 }`
 
 const getUser = async (api: any, userId: any) => {
-  await api.request(userQuery, { userId })
+  return await api.request(userQuery, { userId })
     .then((userQueryResult: any) => {
       let userQueryResultData = userQueryResult.User
       return userQueryResultData
@@ -32,7 +32,7 @@ const loggedInUser = async (event: any) => {
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
 
-  return getUser(api, userId)
+  return await getUser(api, userId)
     .then((emailUser: any) => {
       if (!emailUser) {
         return { error: `No user with id: ${userId}` }
@@ -42,7 +42,7 @@ const loggedInUser = async (event: any) => {
     })
     .catch(error => {
       console.log(`Error: ${JSON.stringify(error)}`)
-      return { error: `An unexpected error occured` }
+      return error
     })
 }
 export default loggedInUser;

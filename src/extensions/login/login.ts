@@ -9,19 +9,17 @@ query UserQuery($email: String!) {
   }
 }`
 
-const getGraphcoolUser = async (api: any, email: any) => {
-  await api.request(userQuery, { email })
-    .then((userQueryResult: any)=> {
+const login = async (event: any) => {
+  const getGraphcoolUser = async (api: any, email: any) => {
+    return await api.request(userQuery, { email }).then((userQueryResult: any) => {
       if (userQueryResult.error) {
         return Promise.reject(userQueryResult.error)
       } else {
-        let userQueryResultUser: any = userQueryResult.User
-        return userQueryResultUser
+        return userQueryResult.User
       }
     })
-}
+  }
 
-const authenticate = async (event: any) => {
   if (!event.context.graphcool.pat) {
     console.log('Please provide a valid root token!')
     return { error: 'Email Authentication not configured correctly.' }
@@ -33,32 +31,33 @@ const authenticate = async (event: any) => {
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
 
-  await getGraphcoolUser(api, email)
+  return await getGraphcoolUser(api, email)
     .then((graphcoolUser: any) => {
       if (!graphcoolUser) {
         return Promise.reject('Invalid Credentials')
       } else {
         return bcryptjs.compare(password, graphcoolUser.password)
-    .then((passwordCorrect: any) => {
-      if (passwordCorrect) {
-        return graphcoolUser.id
-      } else {
-        return Promise.reject('Invalid Credentials')
+          .then((passwordCorrect: any) => {
+            if (passwordCorrect) {
+              let newid = graphcoolUser.id
+              console.log('newlogin user id', newid)
+              return newid
+            } else {
+              return Promise.reject('Invalid Credentials')
+            }
+          })
       }
-    })
-}
     })
     .then(graphcoolUserId => {
       let generateAuthTokenID: any = graphcool.generateAuthToken(graphcoolUserId, 'User')
+      console.log('Auth ID', generateAuthTokenID)
       return generateAuthTokenID
-})
-  .then(token => {
-    let tokenData = { data: { token } }
-    return tokenData
-  })
-  .catch(error => {
-    console.log(`Error: ${JSON.stringify(error)}`)
-    return { error: `An unexpected error occured` }
-  })
+    })
+    .then((token) => {
+      return { data: { token } }
+    })
+    .catch(error => {
+      throw error;
+    })
 }
-export default authenticate;
+export default login;
