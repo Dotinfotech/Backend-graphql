@@ -40,7 +40,6 @@ const login = async (event: any) => {
           .then((passwordCorrect: any) => {
             if (passwordCorrect) {
               let newid = graphcoolUser.id
-              console.log('newlogin user id', newid)
               return newid
             } else {
               return Promise.reject('Invalid Credentials')
@@ -50,7 +49,6 @@ const login = async (event: any) => {
     })
     .then(graphcoolUserId => {
       let generateAuthTokenID: any = graphcool.generateAuthToken(graphcoolUserId, 'User')
-      console.log('Auth ID', generateAuthTokenID)
       return generateAuthTokenID
     })
     .then((token) => {

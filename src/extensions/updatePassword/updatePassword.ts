@@ -1,5 +1,13 @@
 import { fromEvent } from "graphcool-lib";
 import * as bcrypt from "bcryptjs";
+import * as sgMail from '@sendgrid/mail';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
+let sendKey: any = process.env.SENDGRID_API_KEY
+sgMail.setApiKey(sendKey);
+
 
 const updatePassword = async (event: any) => {
   const { email, password, newPassword } = event.data;
@@ -22,8 +30,7 @@ const updatePassword = async (event: any) => {
         if (userQueryResult.error) {
           return Promise.reject(userQueryResult.error);
         } else {
-          let userQueryResultUser = userQueryResult.User;
-          return userQueryResultUser;
+          return userQueryResult.User;
         }
       });
   };
@@ -41,8 +48,7 @@ const updatePassword = async (event: any) => {
       }`
     )
       .then((userMutationResult: any) => {
-        let userMutationResultUpdateUser = userMutationResult.updateUser.id;
-        return userMutationResultUpdateUser;
+       return userMutationResult.updateUser.id;
       });
   };
 
@@ -63,8 +69,21 @@ const updatePassword = async (event: any) => {
       }
     })
     .then(id => {
-      let DataID = { data: { id } };
-      return DataID;
+     return { data: { id } };
+    })
+    .then((graphcoolUser: any) => {
+      if (graphcoolUser) {
+        const sendMail: any = {
+          to: email,
+          from: process.env.EMAIL_ID,
+          subject: 'Account update',
+          text: `This is a regarding for your account that password has been updated.`
+        };
+        let reSend: any = sgMail.send(sendMail)
+        return reSend
+      } else {
+        return Promise.reject('Invalid Credentials')
+      }
     })
     .catch(error => {
       console.log(error);

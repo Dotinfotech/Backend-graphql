@@ -74,5 +74,15 @@ typings/
 
 # FuseBox cache
 .fusebox/
+
+graphcoolrc
+
 .graphcoolrc
+
 package-lock.json
+
+.build
+
+.prettierrc
+
+.tslint.json

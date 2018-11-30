@@ -1,6 +1,13 @@
 import { fromEvent } from 'graphcool-lib'
 import * as bcryptjs from 'bcryptjs'
 import * as validator from 'validator'
+import * as sgMail from '@sendgrid/mail';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
+let sendKey: any = process.env.SENDGRID_API_KEY
+sgMail.setApiKey(sendKey);
 
 const userQuery = `
 query UserQuery($email: String!) {
@@ -53,22 +60,38 @@ const signup = async (event: any) => {
     return await getGraphcoolUser(api, email)
       .then((graphcoolUser: any) => {
         if (!graphcoolUser) {
-          console.log('getgraphcool user')
           return bcryptjs.hash(password, salt)
             .then((hash: any) => createGraphcoolUser(api, email, hash))
-        } else {
-          let newError: any = ('Email already in use');
+        }
+        else {
+          let newError: any = Promise.reject('Email already in use');
           return newError
         }
       })
       .then((graphcoolUserId: any) => {
+        console.log('gc u id', graphcoolUserId)
         return graphcool.generateAuthToken(graphcoolUserId, 'User')
           .then(token => {
-            return { data: { id: graphcoolUserId, token } }
+            let tokenData = { data: { token: token } }
+            return tokenData
           })
       })
+      .then((graphcoolUser: any) => {
+        if (graphcoolUser) {
+          const sendMail: any = {
+            to: email,
+            from: process.env.EMAIL_ID,
+            subject: 'Account Creation',
+            text: `This is a confirmation for your account has just been created.`
+          };
+          let reSend: any = sgMail.send(sendMail)
+          return reSend
+        } else {
+          return Promise.reject('Invalid Credentials')
+        }
+      })
       .catch((error: any) => {
-        console.log(`Error: ${JSON.stringify(error)}`)
+        // console.log(`Error: ${JSON.stringify(error)}`)
         return error
       })
   } else {

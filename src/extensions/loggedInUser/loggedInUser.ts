@@ -11,8 +11,7 @@ query UserQuery($userId: ID!) {
 const getUser = async (api: any, userId: any) => {
   return await api.request(userQuery, { userId })
     .then((userQueryResult: any) => {
-      let userQueryResultData = userQueryResult.User
-      return userQueryResultData
+      return userQueryResult.User
     })
     .catch((error: any) => {
       console.log(`Error: ${JSON.stringify(error)}`)
@@ -37,8 +36,7 @@ const loggedInUser = async (event: any) => {
       if (!emailUser) {
         return { error: `No user with id: ${userId}` }
       }
-      let DataEmaiUser = { data: emailUser }
-      return DataEmaiUser
+      return { data: emailUser }
     })
     .catch(error => {
       console.log(`Error: ${JSON.stringify(error)}`)
