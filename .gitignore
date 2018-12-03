@@ -35,6 +35,7 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+package-lock.json
 
 # TypeScript v1 declaration files
 typings/
@@ -75,14 +76,17 @@ typings/
 # FuseBox cache
 .fusebox/
 
+# graphcool deployFile
 graphcoolrc
-
 .graphcoolrc
 
-package-lock.json
+# Build Folder
+.build/
 
-.build
+# Prettier Config
+.prettierrc/
 
-.prettierrc
+# TS lint Config
+.tslint.json/
 
-.tslint.json
+.vscode/

@@ -15,14 +15,14 @@ sgMail.setApiKey(sendKey);
 const passwordResetToken = async (event: any) => {
 
     // Retrieve payload from event
-    const { resetToken, email } = event.data.resetToken
+    const resetToken = event.data.resetToken
     const newPassword = event.data.password
 
     // Graphcool-Lib Event and API  
     const graphcool = fromEvent(event)
     const api = graphcool.api('simple/v1')
 
-    // Salt Rounds
+    // BcryptSaltRounds
     const saltRounds = 10
 
     // FetchUser Function with ResetToken
@@ -58,11 +58,12 @@ const passwordResetToken = async (event: any) => {
           id
         }
       }`)
-        .then((userMutationResult: any) => (userMutationResult.updateUser.id))
+            .then((userMutationResult: any) => (userMutationResult.updateUser.id))
     }
 
     return await getUserWithToken(resetToken)
         .then((graphcoolUser: any) => {
+
             // Retrieve payload from graphcoolUser
             const userId = graphcoolUser.id
             const resetExpires = graphcoolUser.resetExpires
@@ -77,21 +78,6 @@ const passwordResetToken = async (event: any) => {
                     .catch((error: any) => ({ error: error.toString() }))
             }
         })
-        // // Sending Mail confirmation for account password reset 
-        // .then((graphcoolUser: any) => {
-        //     if (graphcoolUser) {
-        //         const sendMail: any = {
-        //             to: email,
-        //             from: process.env.EMAIL_ID,
-        //             subject: 'Account Creation',
-        //             text: `This is a confirmation for your account has just been created.`
-        //         };
-        //         let reSend: any = sgMail.send(sendMail)
-        //         return reSend
-        //     } else {
-        //         return Promise.reject('Invalid Credentials')
-        //     }
-        // })
         .catch((error: any) => {
             console.log(error)
             return { error: 'An unexpected error occured.' }

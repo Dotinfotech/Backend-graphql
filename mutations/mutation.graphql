@@ -8,7 +8,7 @@
 
 `mutation {
 # Replace __EMAIL__ & __PASSWORD__
-  authenticateUser(email:"__EMAIL__",password:"__PASSWORD__") {
+  loginUser(email:"__EMAIL__",password:"__PASSWORD__") {
     token
   }
 }`
