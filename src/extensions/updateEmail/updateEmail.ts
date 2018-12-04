@@ -36,9 +36,11 @@ const updateEmail = async (event: any) => {
           return Promise.reject(userQueryResult.error)
         } else {
           return userQueryResult.User
+
         }
       })
   }
+
   // Update User Function
   const updateGraphcoolUser = async (id: any, newEmail: any) => {
     return await api.request(`
@@ -54,12 +56,13 @@ const updateEmail = async (event: any) => {
         return userMutationResult.updateUser.id
       })
   }
+
   // Validating Email from graphcool database
   if (validator.isEmail(newEmail)) {
     return await getGraphcoolUser(email)
       .then((graphcoolUser: any) => {
         if (graphcoolUser === null) {
-          return Promise.reject("Invalid Credentials")
+          return Promise.reject("User doesn't exists")
         } else {
           // Comparing Passwords
           return bcrypt.compare(password, graphcoolUser.password)
@@ -67,13 +70,10 @@ const updateEmail = async (event: any) => {
               if (res == true) {
                 return updateGraphcoolUser(graphcoolUser.id, newEmail)
               } else {
-                return Promise.reject("Invalid Credentials")
+                return Promise.reject('Email or Password is wrong or User already exists with new email')
               }
             })
         }
-      })
-      .then((id: any) => {
-        return { data: { id } }
       })
       // Sending Mail confirmation for account email updation 
       .then((graphcoolUser: any) => {
@@ -90,12 +90,16 @@ const updateEmail = async (event: any) => {
           return Promise.reject('Email Already Sent')
         }
       })
+      .then((id: any) => {
+        let newid = { data: { id: 'Email Updated' } }
+        return newid
+      })
       .catch((error: any) => {
         console.log(`Error: ${JSON.stringify(error)}`)
         throw { error: 'An error occurred' }
       })
   } else {
-    return { error: "Not a valid email" }
+    return { error: 'Not a valid email' }
   }
 }
 // Exporting Main Function

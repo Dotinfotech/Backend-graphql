@@ -43,7 +43,8 @@ const loggedInUser = async (event: any) => {
       if (!emailUser) {
         return { error: `No user with id: ${userId}` }
       }
-      return { data: emailUser }
+      let DataEmaiUser = { data: emailUser }
+      return DataEmaiUser
     })
     .catch((error: any) => {
       console.log(`Error: ${JSON.stringify(error)}`)

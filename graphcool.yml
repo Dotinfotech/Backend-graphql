@@ -41,7 +41,7 @@ functions:
     schema: ./src/extensions/passwordResetToken/passwordResetToken.graphql
     handler:
       code:
-        src: ./src/extensions/passwordResetToken/passwordResetToken2.ts
+        src: ./src/extensions/passwordResetToken/passwordResetToken.ts
 
   passwordResetEmail:
     type: resolver

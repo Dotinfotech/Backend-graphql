@@ -3,7 +3,6 @@ import { fromEvent } from 'graphcool-lib';
 import cryptoString = require('crypto-random-string');
 import * as sgMail from '@sendgrid/mail';
 import * as dotenv from 'dotenv';
-import { connect } from 'tls';
 
 // Environment Config
 dotenv.config();
@@ -70,10 +69,11 @@ const passwordResetEmail = async (event: any) => {
       }
     `)
   }
+  
   return await getGraphcoolUser(email)
     .then((graphcoolUser: any) => {
       if (graphcoolUser === null) {
-        return Promise.reject('Invalid Credentials')
+        return Promise.reject("User doesn't exists")
       } else {
         return toggleReset(graphcoolUser.id);
       }
@@ -81,7 +81,7 @@ const passwordResetEmail = async (event: any) => {
     // Sending Mail confirmation for account reset password 
     .then((graphcoolUser: any) => {
       if (graphcoolUser === null) {
-        return Promise.reject('Email Already Sent')
+        return Promise.reject("User doesn't exists")
       } else {
         const resetToken: any = graphcoolUser.updateUser.resetToken
         const resetExpire: any = graphcoolUser.updateUser.resetExpires
@@ -97,7 +97,7 @@ const passwordResetEmail = async (event: any) => {
       }
     })
     .then((id: any) => {
-      let newID = { data: { id: 'Request for Reset Password is sent' } }
+      let newID = { data: { id: 'Forgot Password Mail Sent' } }
       return newID
     })
     .catch((error: any) => {

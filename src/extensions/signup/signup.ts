@@ -53,7 +53,6 @@ const getGraphcoolUser = async (api: any, email: any) => {
 
 // Main Export Function
 const signup = async (event: any) => {
-
   // Validating Root Token
   if (!event.context.graphcool.pat) {
     console.log('Please provide a valid root token!')
@@ -78,21 +77,15 @@ const signup = async (event: any) => {
         if (!graphcoolUser) {
           return bcryptjs.hash(password, salt)
             .then((hash: any) => createGraphcoolUser(api, email, hash))
-        }
-        else {
+        } else {
           return Promise.reject('EmailID is already in use')
         }
       })
-      .then((graphcoolUserId: any) => {
-        return graphcool.generateAuthToken(graphcoolUserId, 'User')
-          .then((token: any) => {
-            let tokenData = { data: { token: token } }
-            return tokenData
-          })
-      })
       // Sending Mail confirmation for account creation 
       .then((graphcoolUser: any) => {
-        if (graphcoolUser) {
+        if (graphcoolUser === null) {
+          return Promise.reject('User doesnt exits')
+        } else {
           const sendMail: any = {
             to: email,
             from: process.env.EMAIL_ID,
@@ -101,9 +94,15 @@ const signup = async (event: any) => {
           };
           let reSend: any = sgMail.send(sendMail)
           return reSend
-        } else {
-          return Promise.reject('Email Already Sent')
         }
+      })
+      .then((graphcoolUserId: any) => {
+        return graphcool.generateAuthToken(graphcoolUserId, 'User')
+          .then((token: any) => {
+            let tokenData = { data: { token: token } }
+            console.log('Token data', tokenData)
+            return tokenData
+          })
       })
       .catch((error: any) => {
         console.log(`Error: ${JSON.stringify(error)}`)

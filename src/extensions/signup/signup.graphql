@@ -1,5 +1,4 @@
 type SignupUserPayload {
-  id: ID!
   token: String!
 }
 

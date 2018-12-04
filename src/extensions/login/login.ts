@@ -42,16 +42,17 @@ const login = async (event: any) => {
   return await getGraphcoolUser(api, email)
     .then((graphcoolUser: any) => {
       if (!graphcoolUser) {
-        return Promise.reject('Invalid Credentials')
+        return Promise.reject("User doesn't exists")
       } else {
         // Comparing Passwords
         return bcryptjs.compare(password, graphcoolUser.password)
           .then((passwordCorrect: any) => {
             if (passwordCorrect) {
-              let IDData = graphcoolUser.id
-              return IDData
+              // let IDData = graphcoolUser.id
+              // return IDData
+              return graphcoolUser.id
             } else {
-              return { Error: 'Invalid Credentials' }
+              return Promise.reject("Email or Password is incorrect")
             }
           })
       }
@@ -59,10 +60,12 @@ const login = async (event: any) => {
     // Generating Authentication Token for User
     .then((graphcoolUserId: any) => {
       let generateAuthTokenID: any = graphcool.generateAuthToken(graphcoolUserId, 'User')
+      console.log('auth id',generateAuthTokenID)
       return generateAuthTokenID
     })
     .then((token: any) => {
       let tokenData = { data: { token: token } }
+      console.log('Token data', tokenData)
       return tokenData
     })
     .catch((error: any) => {

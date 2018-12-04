@@ -15,7 +15,7 @@ sgMail.setApiKey(sendKey);
 const updatePassword = async (event: any) => {
 
   // Retrieve payload from event
-  const { email, password, newPassword } = event.data;
+  const { email, password, newPassword } = event.data
 
   // Graphcool-Lib Event and API  
   const graphcool = fromEvent(event);
@@ -56,32 +56,31 @@ const updatePassword = async (event: any) => {
       }`
     )
       .then((userMutationResult: any) => {
-        return userMutationResult.updateUser.id;
+        let newuser = userMutationResult.updateUser.id;
+        return newuser
       });
   };
+  
   return await getGraphcoolUser(email)
     .then((graphcoolUser: any) => {
       if (graphcoolUser === null) {
-        return Promise.reject("Invalid Credentials");
+        return Promise.reject("User doesn't exists");
       } else {
         return bcrypt.compare(password, graphcoolUser.password).then(res => {
           if (res == true) {
-            return bcrypt
-              .hash(newPassword, saltRounds)
+            return bcrypt.hash(newPassword, saltRounds)
               .then(hash => updateGraphcoolUser(graphcoolUser.id, hash));
           } else {
-            return Promise.reject("Invalid Credentials");
+            return Promise.reject("Email or Password is incorrect");
           }
         });
       }
     })
-    .then((id: any) => {
-      let DataID = { data: { id } }
-      return DataID
-    })
     // Sending Mail confirmation for account password updation 
-    .then(() => {
-      try {
+    .then((graphcoolUser: any) => {
+      if (graphcoolUser === null) {
+        return Promise.reject("User doesn't exits")
+      } else {
         const sendMail: any = {
           to: email,
           from: process.env.EMAIL_ID,
@@ -91,9 +90,10 @@ const updatePassword = async (event: any) => {
         let reSend: any = sgMail.send(sendMail)
         return reSend
       }
-      finally {
-        console.log('Mail Sent')
-      }
+    })
+    .then((id) => {
+      let IDData = { data: { id: 'Password updated'} }
+      return IDData
     })
     .catch((error: any) => {
       console.log(`Error: ${JSON.stringify(error)}`)

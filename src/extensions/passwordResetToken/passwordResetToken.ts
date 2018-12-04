@@ -15,25 +15,44 @@ sgMail.setApiKey(sendKey);
 const passwordResetToken = async (event: any) => {
 
     // Retrieve payload from event
-    const { resetToken, email } = event.data.resetToken
+    const resetToken = event.data.resetToken
+    const email = event.data.email
     const newPassword = event.data.password
 
     // Graphcool-Lib Event and API  
     const graphcool = fromEvent(event)
     const api = graphcool.api('simple/v1')
 
-    // Salt Rounds
+    // BcryptSaltRounds
     const saltRounds = 10
+
+    //new
+    // const getUserWithEmail = async (email: any) => {
+    //     return await api.request(`
+    //     query {
+    //       User(email: "${email}") {
+    //         id
+    //         password
+    //       }
+    //     }`)
+    //         .then((userQueryResult: any) => {
+    //             if (userQueryResult.error) {
+    //                 return Promise.reject(userQueryResult.error)
+    //             } else {
+    //                 return userQueryResult.User
+    //             }
+    //         })
+    // }
 
     // FetchUser Function with ResetToken
     const getUserWithToken = async (resetToken: any) => {
         return await api.request(`
          query {
             User(resetToken: "${resetToken}") {
-            id
-            resetExpires
+                id
+                resetExpires
             }
-            }`)
+        }`)
             .then((userQueryResult: any) => {
                 if (userQueryResult.error) {
                     return Promise.reject(userQueryResult.error)
@@ -47,25 +66,28 @@ const passwordResetToken = async (event: any) => {
 
     // Update User Function for Password
     const updatePassword = async (id: any, newPasswordHash: any) => {
-        return api.request(`
-      mutation {
-        updateUser(
-          id: "${id}",
-          password: "${newPasswordHash}",
-          resetToken: null,
-          resetExpires: null
+        return await api.request(`
+         mutation {
+            updateUser(
+            id: "${id}",
+            password: "${newPasswordHash}",
+            resetToken: null,
+            resetExpires: null
         ) {
-          id
-        }
+            id
+          }
       }`)
-        .then((userMutationResult: any) => (userMutationResult.updateUser.id))
+            .then((userMutationResult: any) => (userMutationResult.updateUser.id))
     }
 
     return await getUserWithToken(resetToken)
         .then((graphcoolUser: any) => {
+
             // Retrieve payload from graphcoolUser
             const userId = graphcoolUser.id
             const resetExpires = graphcoolUser.resetExpires
+            const emailID = graphcoolUser.email
+            console.log('EmailID ', emailID)
 
             // Checking for Token Expiration
             if (new Date() > new Date(resetExpires)) {
@@ -73,23 +95,25 @@ const passwordResetToken = async (event: any) => {
             } else {
                 return bcrypt.hash(newPassword, saltRounds)
                     .then((hash: any) => updatePassword(userId, hash))
-                    .then((id: any) => ({ data: { id } }))
+                    .then((id: any) => ({ data: { id: 'Password Changed Successfully' } }))
                     .catch((error: any) => ({ error: error.toString() }))
             }
         })
-        // // Sending Mail confirmation for account password reset 
+        // // Sending Mail confirmation for account reset password 
         // .then((graphcoolUser: any) => {
+        //     const emailID = graphcoolUser.email
+        //     console.log('emai id ', email)
         //     if (graphcoolUser) {
         //         const sendMail: any = {
-        //             to: email,
+        //             to: emailID,
         //             from: process.env.EMAIL_ID,
-        //             subject: 'Account Creation',
-        //             text: `This is a confirmation for your account has just been created.`
+        //             subject: 'Account update',
+        //             text: `This is a regarding for your account that password has been changed successfully.`
         //         };
         //         let reSend: any = sgMail.send(sendMail)
         //         return reSend
         //     } else {
-        //         return Promise.reject('Invalid Credentials')
+        //         return Promise.reject('Email Already Sent')
         //     }
         // })
         .catch((error: any) => {
