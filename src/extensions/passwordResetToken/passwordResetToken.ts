@@ -16,7 +16,6 @@ const passwordResetToken = async (event: any) => {
 
     // Retrieve payload from event
     const resetToken = event.data.resetToken
-    const email = event.data.email
     const newPassword = event.data.password
 
     // Graphcool-Lib Event and API  
@@ -25,24 +24,6 @@ const passwordResetToken = async (event: any) => {
 
     // BcryptSaltRounds
     const saltRounds = 10
-
-    //new
-    // const getUserWithEmail = async (email: any) => {
-    //     return await api.request(`
-    //     query {
-    //       User(email: "${email}") {
-    //         id
-    //         password
-    //       }
-    //     }`)
-    //         .then((userQueryResult: any) => {
-    //             if (userQueryResult.error) {
-    //                 return Promise.reject(userQueryResult.error)
-    //             } else {
-    //                 return userQueryResult.User
-    //             }
-    //         })
-    // }
 
     // FetchUser Function with ResetToken
     const getUserWithToken = async (resetToken: any) => {
@@ -86,9 +67,6 @@ const passwordResetToken = async (event: any) => {
             // Retrieve payload from graphcoolUser
             const userId = graphcoolUser.id
             const resetExpires = graphcoolUser.resetExpires
-            const emailID = graphcoolUser.email
-            console.log('EmailID ', emailID)
-
             // Checking for Token Expiration
             if (new Date() > new Date(resetExpires)) {
                 return Promise.reject('Token expired.')
@@ -99,26 +77,9 @@ const passwordResetToken = async (event: any) => {
                     .catch((error: any) => ({ error: error.toString() }))
             }
         })
-        // // Sending Mail confirmation for account reset password 
-        // .then((graphcoolUser: any) => {
-        //     const emailID = graphcoolUser.email
-        //     console.log('emai id ', email)
-        //     if (graphcoolUser) {
-        //         const sendMail: any = {
-        //             to: emailID,
-        //             from: process.env.EMAIL_ID,
-        //             subject: 'Account update',
-        //             text: `This is a regarding for your account that password has been changed successfully.`
-        //         };
-        //         let reSend: any = sgMail.send(sendMail)
-        //         return reSend
-        //     } else {
-        //         return Promise.reject('Email Already Sent')
-        //     }
-        // })
         .catch((error: any) => {
-            console.log(error)
-            return { error: 'An unexpected error occured.' }
+            console.log(`Error: ${JSON.stringify(error)}`)
+            throw { error: 'An error occurred' }
         })
 }
 // Exporting Main Function

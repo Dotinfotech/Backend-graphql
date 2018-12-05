@@ -100,7 +100,6 @@ const signup = async (event: any) => {
         return graphcool.generateAuthToken(graphcoolUserId, 'User')
           .then((token: any) => {
             let tokenData = { data: { token: token } }
-            console.log('Token data', tokenData)
             return tokenData
           })
       })
@@ -109,7 +108,7 @@ const signup = async (event: any) => {
         throw { error: 'An error occurred' }
       })
   } else {
-    throw new Error('Not a valid email')
+    return { Error: 'Not a valid email' }
   }
 }
 // Exporting Main Function

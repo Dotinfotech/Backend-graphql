@@ -60,12 +60,10 @@ const login = async (event: any) => {
     // Generating Authentication Token for User
     .then((graphcoolUserId: any) => {
       let generateAuthTokenID: any = graphcool.generateAuthToken(graphcoolUserId, 'User')
-      console.log('auth id',generateAuthTokenID)
       return generateAuthTokenID
     })
     .then((token: any) => {
       let tokenData = { data: { token: token } }
-      console.log('Token data', tokenData)
       return tokenData
     })
     .catch((error: any) => {

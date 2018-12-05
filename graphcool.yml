@@ -49,7 +49,14 @@ functions:
     handler:
       code:
         src: ./src/extensions/passwordResetEmail/passwordResetEmail.ts
-
+  
+  reset-password-sent-mail:
+    type: subscription
+    handler:
+      code:
+        src: ./src/subscriptions/resetPasswordSentMail/resetPasswordSentMail.ts
+    query: ./src/subscriptions/resetPasswordSentMail/resetPasswordSentMail.graphql
+   
 permissions:
   #User
   - operation: User.read
