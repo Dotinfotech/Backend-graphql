@@ -50,13 +50,16 @@ functions:
       code:
         src: ./src/extensions/passwordResetEmail/passwordResetEmail.ts
   
-  reset-password-sent-mail:
+  # passwordResetMail:
+  #   type: subscription
+  #   query: ./src/subscriptions/passwordResetMail/passwordResetMail.graphql
+
+  resetPassword:
     type: subscription
+    query: ./src/subscriptions/resetPassword/resetPassword.graphql
     handler:
-      code:
-        src: ./src/subscriptions/resetPasswordSentMail/resetPasswordSentMail.ts
-    query: ./src/subscriptions/resetPasswordSentMail/resetPasswordSentMail.graphql
-   
+      code: ./src/subscriptions/resetPassword/resetPassword.ts
+
 permissions:
   #User
   - operation: User.read
@@ -76,3 +79,4 @@ rootTokens:
   - updateEmail
   - PasswordResetEmail
   - passwordResetToken
+  - resetPassword
