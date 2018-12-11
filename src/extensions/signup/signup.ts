@@ -90,7 +90,7 @@ const signup = async (event: any) => {
             to: email,
             from: process.env.EMAIL_ID,
             subject: 'Account Creation',
-            text: `This is a confirmation for your account has just been created.`
+            text: `Account has been created.`
           };
           let reSend: any = sgMail.send(sendMail)
           return reSend

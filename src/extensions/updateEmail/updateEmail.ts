@@ -82,7 +82,7 @@ const updateEmail = async (event: any) => {
             to: email,
             from: process.env.EMAIL_ID,
             subject: 'Account update',
-            text: `This is a regarding for your account that email has been updated.`
+            text: `Your email has been updated.`
           };
           let reSend: any = sgMail.send(sendMail)
           return reSend
