@@ -3,7 +3,22 @@ type User @model {
   createdAt: DateTime!
   updatedAt: DateTime!
   email: String! @isUnique
-  password: String!
+  password: String! 
+  role: ROLE @defaultValue(value: USER)
   resetExpires: DateTime @isUnique
   resetToken: String @isUnique
+  author: [Post!]! @relation(name: "UserPosts")
+}
+
+type Post @model {
+  id: ID! @isUnique
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  instagramUrl: String @isUnique
+  users: [User!]! @relation(name: "UserPosts")
+}
+
+enum ROLE{
+  USER
+  ADMIN
 }

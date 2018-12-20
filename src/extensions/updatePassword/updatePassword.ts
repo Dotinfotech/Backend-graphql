@@ -60,7 +60,7 @@ const updatePassword = async (event: any) => {
         return newuser
       });
   };
-  
+
   return await getGraphcoolUser(email)
     .then((graphcoolUser: any) => {
       if (graphcoolUser === null) {
@@ -92,7 +92,7 @@ const updatePassword = async (event: any) => {
       }
     })
     .then((id) => {
-      let IDData = { data: { id: 'Password updated'} }
+      let IDData = { data: { id: 'Password updated' } }
       return IDData
     })
     .catch((error: any) => {
@@ -103,3 +103,5 @@ const updatePassword = async (event: any) => {
 
 // Exporting Main Function
 export default updatePassword;
+
+

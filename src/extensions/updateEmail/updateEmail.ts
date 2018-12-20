@@ -99,7 +99,7 @@ const updateEmail = async (event: any) => {
         throw { error: 'An error occurred' }
       })
   } else {
-    return { Error: 'Not a valid email'}
+    return { Error: 'Not a valid email' }
   }
 }
 // Exporting Main Function

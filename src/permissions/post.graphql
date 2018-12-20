@@ -1,0 +1,7 @@
+query postUpdate($node_id: ID!, $user_id: ID!) {
+  SomePostExists(PostFilter:  { id: $node_id, AND: { id: $user_id } })
+}
+
+query postDelete($user_id: ID!, $node_id: ID!) {
+  SomePostExists(Postfilter: { id: $node_id, users: { id: $user_id } })
+}

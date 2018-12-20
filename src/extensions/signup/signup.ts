@@ -18,23 +18,25 @@ query UserQuery($email: String!) {
   User(email: $email){
     id
     password
+    role
   }
 }`
 
 // NewUser Mutation for Email, Password
 const createUserMutation = `
-mutation CreateUserMutation($email: String!, $passwordHash: String!) {
+mutation CreateUserMutation($email: String!, $passwordHash: String!,$role: ROLE!) {
   createUser(
     email: $email,
     password: $passwordHash,
+    role: $role
   ) {
     id
   }
 }`
 
 // CreateUser Function with Emaill, Password
-const createGraphcoolUser = async (api: any, email: any, passwordHash: any) => {
-  return await api.request(createUserMutation, { email, passwordHash })
+const createGraphcoolUser = async (api: any, email: any, passwordHash: any, role: any) => {
+  return await api.request(createUserMutation, { email, passwordHash, role })
     .then((userMutationResult: any) => {
       return userMutationResult.createUser.id
     })
@@ -60,7 +62,7 @@ const signup = async (event: any) => {
   }
 
   // Retrieve payload from event
-  const { email, password } = event.data
+  const { email, password, role } = event.data
 
   // Graphcool-Lib Event and API
   const graphcool = fromEvent(event)
@@ -76,7 +78,7 @@ const signup = async (event: any) => {
       .then((graphcoolUser: any) => {
         if (!graphcoolUser) {
           return bcryptjs.hash(password, salt)
-            .then((hash: any) => createGraphcoolUser(api, email, hash))
+            .then((hash: any) => createGraphcoolUser(api, email, hash, role))
         } else {
           return Promise.reject('EmailID is already in use')
         }
@@ -111,6 +113,7 @@ const signup = async (event: any) => {
     return { Error: 'Not a valid email' }
   }
 }
+
 // Exporting Main Function
 export default signup;
 

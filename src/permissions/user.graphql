@@ -1,0 +1,19 @@
+query userUpdate($node_id: ID!, $user_id: ID!) {
+  SomeUserExists(filter: {
+    id: $node_id, role_in: [USER]
+    AND: [
+        { id: $user_id}
+        { role_in: [USER]}
+    ]
+  })
+}
+
+query userDelete($node_id: ID!, $user_id: ID!) {
+  SomeUserExists(filter: {
+    id: $node_id, role_in: [USER]
+    AND: [
+        { id: $user_id}
+        { role_in: [USER]}
+    ]
+  })
+}

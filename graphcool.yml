@@ -49,29 +49,36 @@ functions:
     handler:
       code:
         src: ./src/extensions/passwordResetEmail/passwordResetEmail.ts
-  
+ 
   passwordResetMail:
     type: subscription
     query: ./src/subscriptions/passwordResetMail/passwordResetMail.graphql
     handler: 
       code: ./src/subscriptions/passwordResetMail/passwordResetMail.ts
 
-  # resetPassword:
-  #   type: subscription
-  #   query: ./src/subscriptions/resetPassword/resetPassword.graphql
-  #   handler:
-  #     code: ./src/subscriptions/resetPassword/resetPassword.ts
-
 permissions:
   #User
   - operation: User.read
     authenticated: true
   - operation: User.create
-    authenticated: true
+    authenticated: false
   - operation: User.update
     authenticated: true
+    query: ./src/permissions/user.graphql:userUpdate
   - operation: User.delete
     authenticated: true
+    query: ./src/permissions/user.graphql:userDelete
+  #Post
+  - operation: Post.read
+    authenticated: true
+  - operation: Post.create
+    authenticated: false
+  - operation: Post.update
+    authenticated: true
+    query: ./src/permissions/post.graphql:postUpdate
+  - operation: Post.delete
+    authenticated: true
+    query: ./src/permissions/post.graphql:postDelete
 
 rootTokens:
   - signupUser
@@ -81,4 +88,4 @@ rootTokens:
   - updateEmail
   - PasswordResetEmail
   - passwordResetToken
-  - resetPassword
+  - PasswordResetMail
