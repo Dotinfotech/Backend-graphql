@@ -1,5 +1,5 @@
 # dotbackend-graphql
-Admin Panel - UserAuthentication Signup, LoggedInUser, Reset Password
+Admin Panel - UserAuthentication Signup, Login, Forgot Password, Reset Password, Update Email, Update Password
 
 # Run
 1. Install Dependencies - npm install 

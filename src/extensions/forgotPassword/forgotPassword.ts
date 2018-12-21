@@ -15,7 +15,7 @@ sgMail.setApiKey(sendKey);
 const passwordResetEmail = async (event: any) => {
 
   // Retrieve payload from event
-  const { email } = event.data
+  const { email,resetToken, resetExpires } = event.data
 
   // Graphcool-Lib Event and API
   const graphcool = fromEvent(event)
@@ -53,14 +53,16 @@ const passwordResetEmail = async (event: any) => {
       })
   }
 
+  var tokenReset = generateResetToken();
+  var tokenExpiry = generateExpiryDate();
   //Reset Function for ResetToken, ExpiryDate
   function toggleReset(graphcoolUserId: any) {
     return api.request(`
       mutation {
         updateUser(
           id: "${graphcoolUserId}",
-          resetToken: "${generateResetToken()}",
-          resetExpires: "${generateExpiryDate()}"
+          resetToken: "${tokenReset}",
+          resetExpires: "${tokenExpiry}"
         ) {
           id
           resetToken
@@ -69,7 +71,7 @@ const passwordResetEmail = async (event: any) => {
       }
     `)
   }
-  
+
   return await getGraphcoolUser(email)
     .then((graphcoolUser: any) => {
       if (graphcoolUser === null) {
@@ -83,26 +85,23 @@ const passwordResetEmail = async (event: any) => {
       if (graphcoolUser === null) {
         return Promise.reject("User doesn't exists")
       } else {
-        const resetToken: any = graphcoolUser.updateUser.resetToken
-        const resetExpire: any = graphcoolUser.updateUser.resetExpires
-        const newexpire = resetExpire.toLocaleString()
         const sendMail: any = {
           to: email,
           from: process.env.EMAIL_ID,
           subject: 'Reset Password',
-          text: `Click the following link to reset the password: ${process.env.CLIENT_URL}/reset_password?token=${resetToken}
-           and link will expire in ${(newexpire)}`
+          text: `Click the following link to reset the password: ${process.env.CLIENT_URL}/reset_password?token=${tokenReset}
+           and link will expire in ${(tokenExpiry)}`
         };
         return sgMail.send(sendMail)
       }
     })
-    .then((id: any) => {
-      let newID = { data: { id: 'Forgot Password Mail Sent' } }
-      return newID
+    .then((response: any) => {
+      let tokenData = { data: { message: 'Forgot Password Email Sent', resetToken: tokenReset } }
+      return tokenData
     })
     .catch((error: any) => {
       console.log(`Error: ${JSON.stringify(error)}`)
-      throw { error: 'An error occurred' }
+      throw { Error: 'An error occurred' }
     })
 }
 // Exporting Main Function

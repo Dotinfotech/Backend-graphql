@@ -18,6 +18,9 @@ const updateEmail = async (event: any) => {
   // Retrieve payload from event
   const { email, password, newEmail } = event.data
 
+  if (email === newEmail) {
+    throw new Error('Old Email Can Not Set As New Email')
+  }
   // Graphcool-Lib Event and API
   const graphcool = fromEvent(event)
   const api = graphcool.api('simple/v1')
@@ -90,16 +93,20 @@ const updateEmail = async (event: any) => {
           return Promise.reject('Email Already Sent')
         }
       })
-      .then((id: any) => {
-        let newid = { data: { id: 'Email Updated' } }
-        return newid
+      .then((message: any) => {
+        let messageData = { data: { message: 'Email Updated' } }
+        return messageData
       })
       .catch((error: any) => {
         console.log(`Error: ${JSON.stringify(error)}`)
-        throw { error: 'An error occurred' }
+        throw { Error: 'An error occurred' }
       })
   } else {
-    return { Error: 'Not a valid email' }
+    return {
+      data: {
+        error: 'Not a valid email'
+      }
+    }
   }
 }
 // Exporting Main Function

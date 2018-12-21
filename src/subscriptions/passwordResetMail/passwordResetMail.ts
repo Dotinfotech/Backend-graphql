@@ -9,14 +9,12 @@ dotenv.config();
 
 // SendGrid Environment Config
 let sendKey: any = process.env.SENDGRID_API_KEY
-console.log('send key', sendKey)
 sgMail.setApiKey(sendKey);
 
 const resetPassword = async (event: any) => {
 
     // Retrieve payload from event
     const { email } = event.data.User.node
-    console.log('EmailID', email)
 
     // Graphcool-Lib Event and API
     const graphcool = fromEvent(event)
@@ -39,7 +37,6 @@ const resetPassword = async (event: any) => {
             })
     }
     if (validator.isEmail(email)) {
-        console.log('email', email)
         return await getGraphcoolUser(email)
             .then((graphcoolUser: any) => {
                 if (graphcoolUser) {
@@ -57,7 +54,7 @@ const resetPassword = async (event: any) => {
             })
             .catch((error: any) => {
                 console.log(`Error: ${JSON.stringify(error)}`)
-                throw { error: 'An error occurred' }
+                throw { Error: 'An error occurred' }
             })
     }
     else {

@@ -48,8 +48,6 @@ const login = async (event: any) => {
         return bcryptjs.compare(password, graphcoolUser.password)
           .then((passwordCorrect: any) => {
             if (passwordCorrect) {
-              // let IDData = graphcoolUser.id
-              // return IDData
               return graphcoolUser.id
             } else {
               return Promise.reject("Email or Password is incorrect")
@@ -68,7 +66,7 @@ const login = async (event: any) => {
     })
     .catch((error: any) => {
       console.log(`Error: ${JSON.stringify(error)}`)
-      throw new Error('An Error Occurred')
+      throw { Error: 'An error occurred' }
     })
 }
 // Exporting Main Function

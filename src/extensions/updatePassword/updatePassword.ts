@@ -17,6 +17,9 @@ const updatePassword = async (event: any) => {
   // Retrieve payload from event
   const { email, password, newPassword } = event.data
 
+  if (password === newPassword) {
+    throw new Error('Old Password Can Not Set As New Password')
+  }
   // Graphcool-Lib Event and API  
   const graphcool = fromEvent(event);
   const api = graphcool.api("simple/v1");
@@ -66,14 +69,15 @@ const updatePassword = async (event: any) => {
       if (graphcoolUser === null) {
         return Promise.reject("User doesn't exists");
       } else {
-        return bcrypt.compare(password, graphcoolUser.password).then(res => {
-          if (res == true) {
-            return bcrypt.hash(newPassword, saltRounds)
-              .then(hash => updateGraphcoolUser(graphcoolUser.id, hash));
-          } else {
-            return Promise.reject("Email or Password is incorrect");
-          }
-        });
+        return bcrypt.compare(password, graphcoolUser.password)
+          .then(res => {
+            if (res == true) {
+              return bcrypt.hash(newPassword, saltRounds)
+                .then(hash => updateGraphcoolUser(graphcoolUser.id, hash));
+            } else {
+              return Promise.reject("Email or Password is incorrect");
+            }
+          });
       }
     })
     // Sending Mail confirmation for account password updation 
@@ -91,13 +95,13 @@ const updatePassword = async (event: any) => {
         return reSend
       }
     })
-    .then((id) => {
-      let IDData = { data: { id: 'Password updated' } }
-      return IDData
+    .then((message: any) => {
+      let messageData = { data: { message: 'Password updated' } }
+      return messageData
     })
     .catch((error: any) => {
       console.log(`Error: ${JSON.stringify(error)}`)
-      throw { error: 'An error occurred' }
+      throw { Error: 'An error occurred' }
     });
 };
 

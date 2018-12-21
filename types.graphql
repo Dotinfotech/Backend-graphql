@@ -3,7 +3,7 @@ type User @model {
   createdAt: DateTime!
   updatedAt: DateTime!
   email: String! @isUnique
-  password: String! 
+  password: String!
   role: ROLE @defaultValue(value: USER)
   resetExpires: DateTime @isUnique
   resetToken: String @isUnique

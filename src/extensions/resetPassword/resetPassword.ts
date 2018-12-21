@@ -73,13 +73,13 @@ const passwordResetToken = async (event: any) => {
             } else {
                 return bcrypt.hash(newPassword, saltRounds)
                     .then((hash: any) => updatePassword(userId, hash))
-                    .then((id: any) => ({ data: { id: 'Password Changed Successfully' } }))
+                    .then((message: any) => ({ data: { message: 'Password Changed Successfully' } }))
                     .catch((error: any) => ({ error: error.toString() }))
             }
         })
         .catch((error: any) => {
             console.log(`Error: ${JSON.stringify(error)}`)
-            throw { error: 'An error occurred' }
+            throw { Error: 'An error occurred' }
         })
 }
 // Exporting Main Function

@@ -1,6 +1,7 @@
 types: ./types.graphql
 
 functions:
+  # Resolvers
   signupUser:
     type: resolver
     schema: src/extensions/signup/signup.graphql
@@ -36,20 +37,21 @@ functions:
       code:
         src: src/extensions/updateEmail/updateEmail.ts
 
-  passwordResetToken:
+  forgotPassword:
     type: resolver
-    schema: ./src/extensions/passwordResetToken/passwordResetToken.graphql
+    schema: ./src/extensions/forgotPassword/forgotPassword.graphql
     handler:
       code:
-        src: ./src/extensions/passwordResetToken/passwordResetToken.ts
+        src: ./src/extensions/forgotPassword/forgotPassword.ts
 
-  passwordResetEmail:
+  resetPassword:
     type: resolver
-    schema: ./src/extensions/passwordResetEmail/passwordResetEmail.graphql
+    schema: ./src/extensions/resetPassword/resetPassword.graphql
     handler:
       code:
-        src: ./src/extensions/passwordResetEmail/passwordResetEmail.ts
- 
+        src: ./src/extensions/resetPassword/resetPassword.ts      
+
+  # Subscription
   passwordResetMail:
     type: subscription
     query: ./src/subscriptions/passwordResetMail/passwordResetMail.graphql
@@ -57,9 +59,12 @@ functions:
       code: ./src/subscriptions/passwordResetMail/passwordResetMail.ts
 
 permissions:
-  #User
+  # User
   - operation: User.read
-    authenticated: true
+    authenticated: false
+    fields: 
+      - id 
+      - email
   - operation: User.create
     authenticated: false
   - operation: User.update
@@ -68,9 +73,9 @@ permissions:
   - operation: User.delete
     authenticated: true
     query: ./src/permissions/user.graphql:userDelete
-  #Post
+  # Post
   - operation: Post.read
-    authenticated: true
+    authenticated: false
   - operation: Post.create
     authenticated: false
   - operation: Post.update
@@ -86,6 +91,6 @@ rootTokens:
   - loggedInUser
   - updatePassword
   - updateEmail
-  - PasswordResetEmail
-  - passwordResetToken
-  - PasswordResetMail
+  - forgotPassword
+  - resetPassword
+  - passwordResetMail

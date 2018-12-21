@@ -24,7 +24,7 @@ query UserQuery($email: String!) {
 
 // NewUser Mutation for Email, Password
 const createUserMutation = `
-mutation CreateUserMutation($email: String!, $passwordHash: String!,$role: ROLE!) {
+mutation CreateUserMutation($email: String!, $passwordHash: String!,$role: ROLE) {
   createUser(
     email: $email,
     password: $passwordHash,
@@ -100,20 +100,23 @@ const signup = async (event: any) => {
       })
       .then((graphcoolUserId: any) => {
         return graphcool.generateAuthToken(graphcoolUserId, 'User')
-          .then((token: any) => {
-            let tokenData = { data: { token: token } }
-            return tokenData
+          .then((message: any) => {
+            let messageData = { data: { message: 'User Signup Successfully' } }
+            return messageData
           })
       })
       .catch((error: any) => {
         console.log(`Error: ${JSON.stringify(error)}`)
-        throw { error: 'An error occurred' }
+        throw { Error: 'An error occurred' }
       })
   } else {
-    return { Error: 'Not a valid email' }
+    return {
+      data: {
+        error: 'Not a valid email'
+      }
+    }
   }
 }
-
 // Exporting Main Function
 export default signup;
 

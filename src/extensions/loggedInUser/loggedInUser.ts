@@ -18,7 +18,7 @@ const getUser = async (api: any, userId: any) => {
     })
     .catch((error: any) => {
       console.log(`Error: ${JSON.stringify(error)}`)
-      return { error: `An unexpected error occured` }
+      throw { Error: 'An error occurred' }
     })
 }
 
@@ -43,12 +43,12 @@ const loggedInUser = async (event: any) => {
       if (!emailUser) {
         return { error: `No user with id: ${userId}` }
       }
-      let DataEmaiUser = { data: emailUser }
-      return DataEmaiUser
+      let userData = { data: emailUser }
+      return userData
     })
     .catch((error: any) => {
       console.log(`Error: ${JSON.stringify(error)}`)
-      throw { error: 'An error occurred' }
+      throw { Error: 'An error occurred' }
     })
 }
 // Exporting Main Function

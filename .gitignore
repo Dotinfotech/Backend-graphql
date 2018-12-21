@@ -77,16 +77,15 @@ typings/
 .fusebox/
 
 # graphcool deployFile
-graphcoolrc
 .graphcoolrc
 
 # Build Folder
 .build/
 
 # Prettier Config
-.prettierrc/
+.prettierrc
 
 # TS lint Config
-.tslint.json/
+.tslint.json
 
 .vscode/

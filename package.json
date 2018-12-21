@@ -1,7 +1,7 @@
 {
-  "name": "loginregistergraphql",
+  "name": "dotbackend-graphql",
   "version": "1.0.0",
-  "description": "GraphCool + Typescript signup, loggedInUser, updatePasswordEmail and authentication",
+  "description": "Admin Panel - UserAuthentication Signup, Login, Forgot Password, Reset Password, Update Email, Update Password",
   "main": "index.js",
   "dependencies": {
     "@sendgrid/mail": "^6.3.1",
